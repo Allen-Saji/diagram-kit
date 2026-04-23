@@ -12,6 +12,11 @@ import {
   frame as frameColor,
 } from "../kit";
 
+export type Px402StaticProps = {
+  /** Toggle the debug overlay (red bbox outlines + labels on every kit element). */
+  debug?: boolean;
+};
+
 /**
  * px402 static architecture diagram — the "how a private agent payment flows"
  * sequence-diagram view.
@@ -19,9 +24,9 @@ import {
  * Canvas is 1600x1000. 4 actor lanes at 200, 600, 1000, 1400 px.
  * Horizontal arrows between lanes; dashed lifelines below each actor.
  */
-export const Px402Static: React.FC = () => {
+export const Px402Static: React.FC<Px402StaticProps> = ({ debug = false }) => {
   return (
-    <Canvas w={1600} h={1000}>
+    <Canvas w={1600} h={1000} debug={debug}>
       {/* Title bar */}
       <At x={60} y={40}>
         <div style={{ width: 1480 }}>
@@ -60,6 +65,7 @@ const FlowBody: React.FC = () => {
       {/* Actor headers */}
       <At x={LANE.agent} y={150} anchor="top-center">
         <Card
+          debugId="actor-agent"
           color="blue"
           title="Agent"
           subtitle="AI client"
@@ -71,6 +77,7 @@ const FlowBody: React.FC = () => {
       </At>
       <At x={LANE.server} y={150} anchor="top-center">
         <Card
+          debugId="actor-server"
           color="peach"
           title="px402 server"
           subtitle="Hono / Express / Next / MCP"
@@ -82,6 +89,7 @@ const FlowBody: React.FC = () => {
       </At>
       <At x={LANE.per} y={150} anchor="top-center">
         <Card
+          debugId="actor-per"
           color="purple"
           title="MagicBlock PER"
           subtitle="private Base chain"
@@ -93,6 +101,7 @@ const FlowBody: React.FC = () => {
       </At>
       <At x={LANE.sub} y={150} anchor="top-center">
         <Card
+          debugId="actor-subscriber"
           color="yellow"
           title="Subscriber"
           subtitle="polls getSignaturesForAddress"
@@ -131,6 +140,7 @@ const FlowBody: React.FC = () => {
         from={{ x: LANE.server - 8, y: 325 }}
         to={{ x: LANE.agent + 8, y: 325 }}
         label="402 + payment token (HMAC)"
+        sublabel="stateless verify, no database"
         color={palette.peach.border}
       />
 
@@ -147,6 +157,7 @@ const FlowBody: React.FC = () => {
       {/* Step 4: PER self-tick (Crank11) */}
       <At x={LANE.per} y={480} anchor="top-center">
         <Card
+          debugId="step4-crank"
           color="lavender"
           outline
           padding="10px 18px"
@@ -205,23 +216,17 @@ const FlowBody: React.FC = () => {
         thick
       />
 
-      {/* Right-side red annotations */}
-      <At x={740} y={380}>
-        <Annotation tone="red" size={13} style={{ textAlign: "left" }}>
+      {/* Red annotation — placed below step 3 arrow, above the Crank box */}
+      <At x={740} y={422}>
+        <Annotation
+          debugId="note-u63"
+          tone="red"
+          size={13}
+          style={{ textAlign: "left" }}
+        >
           clientRefId is u63 —
           <br />
-          fits crank log's
-          <br />
-          ~213-char truncation
-        </Annotation>
-      </At>
-      <At x={265} y={357}>
-        <Annotation tone="red" size={13} style={{ textAlign: "left" }}>
-          HMAC token
-          <br />
-          = stateless verify,
-          <br />
-          no database
+          fits 213-char log truncation
         </Annotation>
       </At>
 
