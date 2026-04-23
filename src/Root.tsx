@@ -2,6 +2,7 @@ import "./index.css";
 import { Composition, Still, Folder } from "remotion";
 import { BTreeVsBPlus } from "./compositions/BTreeVsBPlus";
 import { LsmTrees } from "./compositions/LsmTrees";
+import { LsmCompaction } from "./compositions/LsmCompaction";
 import { Px402Static } from "./compositions/Px402Static";
 import { Px402Animated } from "./compositions/Px402Animated";
 
@@ -20,6 +21,12 @@ export const RemotionRoot: React.FC = () => {
           component={LsmTrees}
           width={1600}
           height={780}
+        />
+        <Still
+          id="LsmCompaction"
+          component={LsmCompaction}
+          width={1600}
+          height={820}
         />
       </Folder>
       <Folder name="px402">
@@ -58,6 +65,13 @@ export const RemotionRoot: React.FC = () => {
           component={LsmTrees}
           width={1600}
           height={780}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="LsmCompactionDebug"
+          component={LsmCompaction}
+          width={1600}
+          height={820}
           defaultProps={{ debug: true }}
         />
       </Folder>
