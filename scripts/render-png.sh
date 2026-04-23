@@ -1,21 +1,18 @@
 #!/usr/bin/env bash
-# Render a Remotion <Still> to PNG at a named preset.
+# Render a Remotion <Still> to PNG.
 #
 # Usage:
 #   scripts/render-png.sh <composition-id> [preset] [output-path]
 #
 # Presets:
-#   blog         1600x900   (default, 16:9 for blog embeds)
-#   tweet-sq     1080x1080  (Twitter/X square card)
-#   tweet-tall   1200x1800  (Twitter/X tall card, max 2:3)
-#   ultra        3200x1800  (2x of blog — for retina/high-density reads)
+#   blog     render at composition's native dims (default)
+#   hd       render at 2x density (retina-ready)
+#   ultra    render at 3x density (print/hero)
 #
-# Preset is applied via --width/--height override; the composition
-# itself should be defined at the "blog" size (1600x900) and scaled.
-#
-# Notes:
-#   - Output PNG is 8-bit, sRGB. For retina use --scale=2 (default here).
-#   - Use "blog-2x" preset for a 2x density PNG at blog size (3200x1800).
+# Note: presets only control render DPI/scale. The output aspect ratio
+# always matches the composition's <Still width/height>. If you need a
+# different aspect ratio (e.g. square for Twitter), define a separate
+# composition at that size.
 
 set -euo pipefail
 
@@ -29,12 +26,10 @@ if [ -z "$COMP" ]; then
 fi
 
 case "$PRESET" in
-  blog)       W=1600; H=900;   SCALE=1 ;;
-  blog-2x)    W=1600; H=900;   SCALE=2 ;;
-  tweet-sq)   W=1080; H=1080;  SCALE=1 ;;
-  tweet-tall) W=1200; H=1800;  SCALE=1 ;;
-  ultra)      W=3200; H=1800;  SCALE=1 ;;
-  *)          echo "unknown preset: $PRESET" >&2; exit 1 ;;
+  blog)  SCALE=1 ;;
+  hd)    SCALE=2 ;;
+  ultra) SCALE=3 ;;
+  *)     echo "unknown preset: $PRESET" >&2; exit 1 ;;
 esac
 
 if [ -z "$OUT" ]; then
@@ -45,9 +40,7 @@ mkdir -p "$(dirname "$OUT")"
 
 cd "$(dirname "$0")/.."
 
-echo "rendering ${COMP} at ${W}x${H} (scale=${SCALE}) → ${OUT}"
+echo "rendering ${COMP} at scale=${SCALE}x → ${OUT}"
 npx remotion still "$COMP" "$OUT" \
-  --width="$W" \
-  --height="$H" \
   --scale="$SCALE" \
   --image-format=png
