@@ -1,6 +1,7 @@
 export * from "./palette";
 export * from "./fonts";
 export * from "./Canvas";
+export * from "./Debug";
 export * from "./Panel";
 export * from "./Card";
 export * from "./TreeNode";
