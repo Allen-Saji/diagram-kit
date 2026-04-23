@@ -12,13 +12,20 @@ import {
   fonts,
 } from "../kit";
 
+export type BTreeVsBPlusProps = {
+  /** Toggle the debug overlay (red bbox outlines + labels). */
+  debug?: boolean;
+};
+
 /**
  * Fidelity test: top two panels of the ByteByteGo
  * "B-Trees versus LSM Trees" diagram.
  */
-export const BTreeVsBPlus: React.FC = () => {
+export const BTreeVsBPlus: React.FC<BTreeVsBPlusProps> = ({
+  debug = false,
+}) => {
   return (
-    <Canvas w={1600} h={900}>
+    <Canvas w={1600} h={900} debug={debug}>
       {/* Title bar */}
       <At x={60} y={40}>
         <div style={{ width: 1480 }}>
@@ -189,40 +196,43 @@ const BTreePanelInner: React.FC = () => {
 };
 
 const BPlusTreePanelInner: React.FC = () => {
-  // 3 levels: root (25 | 50), internal (10|20, 30|40, 55|70), leaves
+  // 3 levels: root (25 | 50), internal (10|20, 30|40, 55|70), leaves.
+  // Content width is 660 — keep all x positions + widths within that.
   const root = { x: 330, y: 70 };
   const mid = [
     { x: 110, y: 220 }, // 10|20
     { x: 330, y: 220 }, // 30|40
-    { x: 560, y: 220 }, // 55|70
+    { x: 550, y: 220 }, // 55|70
   ];
+  // 5 leaves spaced to fit inside 660px
   const leaves = [
-    { x: 50, y: 380 }, // 5, 8
-    { x: 180, y: 380 }, // 10, 15, 20
-    { x: 300, y: 380 }, // 25, 28
-    { x: 420, y: 380 }, // 30, 37, 42
-    { x: 540, y: 380 }, // 50, 55
-    { x: 620, y: 380 }, // 50, 55 (leaf copy)
+    { x: 8, y: 380, keys: "5, 8", sub: "val, val" },
+    { x: 138, y: 380, keys: "10, 15, 20", sub: "val, val, val" },
+    { x: 268, y: 380, keys: "25, 28", sub: "val, val" },
+    { x: 398, y: 380, keys: "30, 37, 42", sub: "val, val, val" },
+    { x: 530, y: 380, keys: "50, 55", sub: "val, val" },
   ];
+  const leafWidth = 120;
 
   return (
     <div style={{ position: "relative", width: 660, height: 540 }}>
-      {/* legend */}
-      <At x={520} y={0}>
-        <div style={{ fontSize: 13, color: ink.muted, fontFamily: fonts.sans }}>
-          Root (keys only)
-        </div>
-      </At>
-      <At x={520} y={200}>
-        <div style={{ fontSize: 13, color: ink.muted, fontFamily: fonts.sans }}>
-          Internal nodes
-          <br />
-          (keys only)
+      {/* Caption across top, out of arrow path */}
+      <At x={330} y={-2} anchor="top-center">
+        <div
+          style={{
+            fontSize: 13,
+            color: ink.muted,
+            fontFamily: fonts.sans,
+            fontStyle: "italic",
+          }}
+        >
+          internal nodes hold keys only; values live at the leaves
         </div>
       </At>
 
       <At x={root.x} y={root.y} anchor="top-center">
         <TreeNode
+          debugId="bplus-root"
           color="blue"
           keys="25 | 50"
           width={140}
@@ -234,6 +244,7 @@ const BPlusTreePanelInner: React.FC = () => {
       {mid.map((p, i) => (
         <At key={i} x={p.x} y={p.y} anchor="top-center">
           <TreeNode
+            debugId={`bplus-mid-${i}`}
             color="blue"
             keys={["10 | 20", "30 | 40", "55 | 70"][i]}
             width={130}
@@ -243,22 +254,15 @@ const BPlusTreePanelInner: React.FC = () => {
         </At>
       ))}
 
-      {/* leaves with val,val subtexts */}
-      {[
-        { keys: "5, 8", sub: "val, val" },
-        { keys: "10, 15, 20", sub: "val, val" },
-        { keys: "25, 28", sub: "val, val" },
-        { keys: "30, 37, 42", sub: "val, val, val" },
-        { keys: "50, 55", sub: "val, val" },
-        { keys: "50, 55", sub: "val, val" },
-      ].map((l, i) => (
-        <At key={i} x={leaves[i].x} y={leaves[i].y} anchor="top-left">
+      {leaves.map((l, i) => (
+        <At key={i} x={l.x} y={l.y} anchor="top-left">
           <TreeNode
-            color={i === 4 ? "mint" : "blue"}
+            debugId={`bplus-leaf-${i}`}
+            color="blue"
             keys={l.keys}
             subtext={l.sub}
-            width={i === 5 ? 120 : 110}
-            keysSize={16}
+            width={leafWidth}
+            keysSize={15}
             subtextSize={12}
             padding="6px 10px"
           />
@@ -282,43 +286,38 @@ const BPlusTreePanelInner: React.FC = () => {
         strokeWidth={1.8}
       />
 
-      {/* mid -> leaves (2 per mid) */}
+      {/* mid -> leaves: each mid points to its two adjacent leaves */}
       <Arrow
         from={{ x: mid[0].x - 30, y: mid[0].y + 52 }}
-        to={{ x: leaves[0].x + 55, y: leaves[0].y - 4 }}
+        to={{ x: leaves[0].x + leafWidth / 2, y: leaves[0].y - 4 }}
         strokeWidth={1.8}
       />
       <Arrow
         from={{ x: mid[0].x + 30, y: mid[0].y + 52 }}
-        to={{ x: leaves[1].x + 55, y: leaves[1].y - 4 }}
+        to={{ x: leaves[1].x + leafWidth / 2, y: leaves[1].y - 4 }}
         strokeWidth={1.8}
       />
       <Arrow
         from={{ x: mid[1].x - 30, y: mid[1].y + 52 }}
-        to={{ x: leaves[2].x + 55, y: leaves[2].y - 4 }}
+        to={{ x: leaves[2].x + leafWidth / 2, y: leaves[2].y - 4 }}
         strokeWidth={1.8}
       />
       <Arrow
         from={{ x: mid[1].x + 30, y: mid[1].y + 52 }}
-        to={{ x: leaves[3].x + 55, y: leaves[3].y - 4 }}
+        to={{ x: leaves[3].x + leafWidth / 2, y: leaves[3].y - 4 }}
         strokeWidth={1.8}
       />
       <Arrow
-        from={{ x: mid[2].x - 30, y: mid[2].y + 52 }}
-        to={{ x: leaves[4].x + 55, y: leaves[4].y - 4 }}
-        strokeWidth={1.8}
-      />
-      <Arrow
-        from={{ x: mid[2].x + 30, y: mid[2].y + 52 }}
-        to={{ x: leaves[5].x + 60, y: leaves[5].y - 4 }}
+        from={{ x: mid[2].x, y: mid[2].y + 52 }}
+        to={{ x: leaves[4].x + leafWidth / 2, y: leaves[4].y - 4 }}
         strokeWidth={1.8}
       />
 
-      {/* leaf-level linked list arrows */}
-      {[0, 1, 2, 3, 4].map((i) => (
+      {/* leaf-level linked-list arrows */}
+      {[0, 1, 2, 3].map((i) => (
         <Arrow
           key={i}
-          from={{ x: leaves[i].x + 110 - 5, y: leaves[i].y + 30 }}
+          from={{ x: leaves[i].x + leafWidth - 5, y: leaves[i].y + 30 }}
           to={{ x: leaves[i + 1].x + 2, y: leaves[i + 1].y + 30 }}
           strokeWidth={1.4}
           headSize={7}
