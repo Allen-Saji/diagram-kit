@@ -1,6 +1,7 @@
 import React from "react";
 import { frame, ink } from "./palette";
 import { fonts } from "./fonts";
+import { DebugOverlay } from "./Debug";
 
 type PanelProps = {
   title?: string;
@@ -12,6 +13,8 @@ type PanelProps = {
   radius?: number;
   /** override border color; default near-black */
   borderColor?: string;
+  /** Identifier surfaced by the debug overlay and collision checker. */
+  debugId?: string;
 };
 
 export const Panel: React.FC<PanelProps> = ({
@@ -21,8 +24,10 @@ export const Panel: React.FC<PanelProps> = ({
   padding = 32,
   radius = 20,
   borderColor = frame.border,
+  debugId,
 }) => {
   return (
+    <DebugOverlay id={debugId} kind="panel">
     <div
       style={{
         position: "relative",
@@ -67,5 +72,6 @@ export const Panel: React.FC<PanelProps> = ({
       ) : null}
       {children}
     </div>
+    </DebugOverlay>
   );
 };

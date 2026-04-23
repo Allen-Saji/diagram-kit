@@ -1,6 +1,7 @@
 import React from "react";
 import { palette, PaletteColor } from "./palette";
 import { fonts } from "./fonts";
+import { DebugOverlay } from "./Debug";
 
 type CardProps = {
   color: PaletteColor;
@@ -18,6 +19,8 @@ type CardProps = {
   titleSize?: number;
   subtitleSize?: number;
   style?: React.CSSProperties;
+  /** Identifier surfaced by the debug overlay and collision checker. */
+  debugId?: string;
 };
 
 export const Card: React.FC<CardProps> = ({
@@ -32,46 +35,51 @@ export const Card: React.FC<CardProps> = ({
   titleSize = 22,
   subtitleSize = 16,
   style,
+  debugId,
 }) => {
   const p = palette[color];
   return (
-    <div
-      style={{
-        background: outline ? "transparent" : p.bg,
-        border: `2px solid ${p.border}`,
-        borderRadius: radius,
-        padding,
-        color: p.text,
-        fontFamily: fonts.sans,
-        textAlign: align,
-        display: "inline-flex",
-        flexDirection: "column",
-        alignItems: align === "center" ? "center" : "flex-start",
-        justifyContent: "center",
-        lineHeight: 1.2,
-        ...style,
-      }}
-    >
-      {children ?? (
-        <>
-          {title != null ? (
-            <div style={{ fontSize: titleSize, fontWeight: 700 }}>{title}</div>
-          ) : null}
-          {subtitle != null ? (
-            <div
-              style={{
-                fontSize: subtitleSize,
-                fontWeight: 400,
-                marginTop: title != null ? 2 : 0,
-                color: p.text,
-                opacity: 0.85,
-              }}
-            >
-              {subtitle}
-            </div>
-          ) : null}
-        </>
-      )}
-    </div>
+    <DebugOverlay id={debugId} kind="card">
+      <div
+        style={{
+          background: outline ? "transparent" : p.bg,
+          border: `2px solid ${p.border}`,
+          borderRadius: radius,
+          padding,
+          color: p.text,
+          fontFamily: fonts.sans,
+          textAlign: align,
+          display: "inline-flex",
+          flexDirection: "column",
+          alignItems: align === "center" ? "center" : "flex-start",
+          justifyContent: "center",
+          lineHeight: 1.2,
+          ...style,
+        }}
+      >
+        {children ?? (
+          <>
+            {title != null ? (
+              <div style={{ fontSize: titleSize, fontWeight: 700 }}>
+                {title}
+              </div>
+            ) : null}
+            {subtitle != null ? (
+              <div
+                style={{
+                  fontSize: subtitleSize,
+                  fontWeight: 400,
+                  marginTop: title != null ? 2 : 0,
+                  color: p.text,
+                  opacity: 0.85,
+                }}
+              >
+                {subtitle}
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
+    </DebugOverlay>
   );
 };
