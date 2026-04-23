@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { frame } from "./palette";
 import { fonts } from "./fonts";
+import { DebugProvider } from "./Debug";
 
 type CanvasSize = { w: number; h: number };
 
@@ -14,6 +15,12 @@ type CanvasProps = {
   children: React.ReactNode;
   background?: string;
   style?: React.CSSProperties;
+  /**
+   * When true, every kit element with a debugId renders its bbox overlay.
+   * Typically threaded in through a composition's `debug` prop for use
+   * with the iterate.sh workflow.
+   */
+  debug?: boolean;
 };
 
 /**
@@ -26,23 +33,26 @@ export const Canvas: React.FC<CanvasProps> = ({
   children,
   background = frame.pageBg,
   style,
+  debug = false,
 }) => {
   return (
-    <CanvasContext.Provider value={{ w, h }}>
-      <div
-        style={{
-          position: "relative",
-          width: w,
-          height: h,
-          background,
-          fontFamily: fonts.sans,
-          overflow: "hidden",
-          ...style,
-        }}
-      >
-        {children}
-      </div>
-    </CanvasContext.Provider>
+    <DebugProvider debug={debug}>
+      <CanvasContext.Provider value={{ w, h }}>
+        <div
+          style={{
+            position: "relative",
+            width: w,
+            height: h,
+            background,
+            fontFamily: fonts.sans,
+            overflow: "hidden",
+            ...style,
+          }}
+        >
+          {children}
+        </div>
+      </CanvasContext.Provider>
+    </DebugProvider>
   );
 };
 
