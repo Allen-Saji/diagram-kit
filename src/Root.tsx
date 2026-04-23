@@ -31,6 +31,22 @@ export const RemotionRoot: React.FC = () => {
           durationInFrames={15 * 30}
         />
       </Folder>
+      <Folder name="debug">
+        <Still
+          id="Px402StaticDebug"
+          component={Px402Static}
+          width={1600}
+          height={1000}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="BTreeVsBPlusDebug"
+          component={BTreeVsBPlus}
+          width={1600}
+          height={900}
+          defaultProps={{ debug: true }}
+        />
+      </Folder>
     </>
   );
 };
