@@ -1,7 +1,18 @@
 import "./index.css";
-
-// Compositions are registered in follow-up commits.
+import { Still, Folder } from "remotion";
+import { BTreeVsBPlus } from "./compositions/BTreeVsBPlus";
 
 export const RemotionRoot: React.FC = () => {
-  return null;
+  return (
+    <>
+      <Folder name="fidelity">
+        <Still
+          id="BTreeVsBPlus"
+          component={BTreeVsBPlus}
+          width={1600}
+          height={900}
+        />
+      </Folder>
+    </>
+  );
 };
