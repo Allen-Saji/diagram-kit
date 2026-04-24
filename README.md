@@ -143,49 +143,6 @@ Non-premium X upload limits: <=140 s, <=512 MB, H.264/AAC MP4.
 width height>` in `Root.tsx` to match the preset you'll render at. A 1600x1000
 canvas rendered as `tweet-16x9` (1920x1080) will be letterboxed/padded.
 
-## Project layout
-
-```
-src/
-  kit/                        design system
-    palette.ts                pastel bg/border/text swatches
-    fonts.ts                  Inter + JetBrains Mono
-    Canvas.tsx                fixed-size absolute-positioning canvas + debug
-    Debug.tsx                 DebugContext, DebugOverlay, bbox emitter
-    Panel.tsx                 framed section with pill-label title
-    Card.tsx                  colored rounded card (title + subtitle)
-    TreeNode.tsx              B-tree / B+ tree node
-    FlowBox.tsx               rounded flow step
-    Arrow.tsx                 straight/elbow arrows with label + draw-in
-    Annotation.tsx            red/gray italic side notes
-    Label.tsx                 non-italic section header (tracked)
-    Title.tsx                 headline with color accent + right slot
-  animation/
-    primitives.tsx            Appear, ScaleIn, DrawArrow, Pulse, Hold, Typewriter
-  compositions/
-    fidelity/                 ByteByteGo reference clones
-      BTreeVsBPlus.tsx
-      LsmTrees.tsx
-      LsmCompaction.tsx
-    projects/                 real project architecture diagrams
-      Px402Static.tsx
-      Px402Animated.tsx
-      PortProtocolArch.tsx
-      DiagramKitArch.tsx
-      DiagramKitArchAnimated.tsx
-  Root.tsx                    registers Still / Composition
-  index.ts                    Remotion entry point
-
-scripts/
-  render-png.sh               preset-based PNG render
-  render-mp4.sh               preset-based MP4 render (H.264, yuv420p)
-  iterate.sh                  fast low-res render with --debug overlay
-  check.mjs                   headless collision checker with JSON report
-
-docs/samples/                 committed reference PNGs + MP4
-SKILL.md                      Claude Code skill definition
-```
-
 ## Self-correction pipeline
 
 The kit supports a closed-loop "render, inspect, fix" workflow that catches
