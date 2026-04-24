@@ -60,6 +60,7 @@ async function main() {
 
   const bboxes = [];
   const arrows = [];
+  const orphans = [];
   let canvasOrigin = { x: 0, y: 0 };
   let logCount = 0;
 
@@ -97,12 +98,18 @@ async function main() {
         } catch {
           // ignore malformed
         }
+      } else if (log.text.startsWith("ORPHAN::")) {
+        try {
+          orphans.push(JSON.parse(log.text.slice(8)));
+        } catch {
+          // ignore malformed
+        }
       }
     },
   });
 
   console.log(
-    `${DIM}captured ${bboxes.length} bboxes + ${arrows.length} arrows from ${logCount} browser logs${RESET}\n`,
+    `${DIM}captured ${bboxes.length} bboxes + ${arrows.length} arrows + ${orphans.length} orphan text${RESET} from ${logCount} browser logs\n`,
   );
 
   // Pairwise card/panel overlap check.
@@ -132,15 +139,26 @@ async function main() {
   //
   // Shrink rects by 5px so arrow endpoints touching card edges don't
   // register as collisions. Any arrow crossing more than 5px into a
-  // card's interior is flagged.
+  // card's interior is flagged. Orphan text rects (untagged <div>s)
+  // are treated the same way — if an arrow crosses them, it's a bug.
   const ARROW_MARGIN = 5;
+  const obstacles = [
+    ...bboxes.map((b) => ({
+      label: `${b.kind}·${b.id}`,
+      rect: b.rect,
+    })),
+    ...orphans.map((o, i) => ({
+      label: `orphan·"${o.text}"`,
+      rect: o.rect,
+    })),
+  ];
   for (const arrow of arrows) {
-    for (const bbox of bboxes) {
+    for (const obs of obstacles) {
       const r = {
-        x: bbox.rect.x - canvasOrigin.x + ARROW_MARGIN,
-        y: bbox.rect.y - canvasOrigin.y + ARROW_MARGIN,
-        w: bbox.rect.w - ARROW_MARGIN * 2,
-        h: bbox.rect.h - ARROW_MARGIN * 2,
+        x: obs.rect.x - canvasOrigin.x + ARROW_MARGIN,
+        y: obs.rect.y - canvasOrigin.y + ARROW_MARGIN,
+        w: obs.rect.w - ARROW_MARGIN * 2,
+        h: obs.rect.h - ARROW_MARGIN * 2,
       };
       if (r.w <= 0 || r.h <= 0) continue;
       for (const seg of arrow.segments) {
@@ -148,12 +166,12 @@ async function main() {
           overlaps.push({
             type: "arrow",
             a: `arrow·${arrow.id}`,
-            b: `${bbox.kind}·${bbox.id}`,
+            b: obs.label,
             area: 0,
             segment: seg,
-            rect: bbox.rect,
+            rect: obs.rect,
           });
-          break; // one collision per arrow-card pair
+          break; // one collision per arrow-obstacle pair
         }
       }
     }
@@ -162,7 +180,7 @@ async function main() {
   overlaps.sort((x, y) => (y.area || 0) - (x.area || 0));
 
   // Terminal report.
-  const header = `${COMP}: ${bboxes.length} elements + ${arrows.length} arrows, ${overlaps.length} collision${overlaps.length === 1 ? "" : "s"}`;
+  const header = `${COMP}: ${bboxes.length} elements + ${arrows.length} arrows + ${orphans.length} orphan text, ${overlaps.length} collision${overlaps.length === 1 ? "" : "s"}`;
   if (overlaps.length === 0) {
     console.log(`${GREEN}✓ ${header}${RESET}`);
   } else {
