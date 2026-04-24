@@ -5,6 +5,8 @@ import { LsmTrees } from "./compositions/LsmTrees";
 import { LsmCompaction } from "./compositions/LsmCompaction";
 import { Px402Static } from "./compositions/Px402Static";
 import { Px402Animated } from "./compositions/Px402Animated";
+import { DiagramKitArch } from "./compositions/DiagramKitArch";
+import { DiagramKitArchAnimated } from "./compositions/DiagramKitArchAnimated";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -45,6 +47,22 @@ export const RemotionRoot: React.FC = () => {
           durationInFrames={15 * 30}
         />
       </Folder>
+      <Folder name="diagram-kit">
+        <Still
+          id="DiagramKitArch"
+          component={DiagramKitArch}
+          width={1600}
+          height={1000}
+        />
+        <Composition
+          id="DiagramKitArchAnimated"
+          component={DiagramKitArchAnimated}
+          width={1600}
+          height={1000}
+          fps={30}
+          durationInFrames={15 * 30}
+        />
+      </Folder>
       <Folder name="debug">
         <Still
           id="Px402StaticDebug"
@@ -72,6 +90,13 @@ export const RemotionRoot: React.FC = () => {
           component={LsmCompaction}
           width={1600}
           height={820}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="DiagramKitArchDebug"
+          component={DiagramKitArch}
+          width={1600}
+          height={1000}
           defaultProps={{ debug: true }}
         />
       </Folder>
