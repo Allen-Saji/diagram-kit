@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { ink, frame } from "./palette";
 import { fonts } from "./fonts";
 import { useCanvas } from "./Canvas";
+import { useDebug } from "./Debug";
 
 export type Point = { x: number; y: number };
 
@@ -32,6 +33,12 @@ type ArrowProps = {
   dashed?: boolean;
   /** 0..1 draw-in progress. 1 = fully drawn. undefined = fully drawn. */
   progress?: number;
+  /**
+   * When set and debug emit is on, the arrow's segments are logged via
+   * console.log (prefix "ARROW::") so scripts/check.mjs can run
+   * arrow-vs-card intersection checks.
+   */
+  debugId?: string;
 };
 
 const uid = (() => {
@@ -57,9 +64,33 @@ export const Arrow: React.FC<ArrowProps> = ({
   labelWeight = 500,
   dashed = false,
   progress,
+  debugId,
 }) => {
   const canvas = useCanvas();
+  const { emit } = useDebug();
   const points = [from, ...waypoints, to];
+
+  // Emit arrow geometry for scripts/check.mjs. Fires once on mount when
+  // emit is on and a debugId is provided. Segments serialize the path so
+  // the checker can run segment-vs-rect intersection against every card.
+  const segKey = JSON.stringify(points);
+  useLayoutEffect(() => {
+    if (!emit || !debugId) return;
+    const segments = [];
+    for (let i = 1; i < points.length; i++) {
+      segments.push({ from: points[i - 1], to: points[i] });
+    }
+    const payload = { id: debugId, segments };
+    // eslint-disable-next-line no-console
+    console.log(`ARROW::${JSON.stringify(payload)}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [emit, debugId, segKey]);
+
+  // Reveal opacity for markers + label. When progress is undefined
+  // (static render), everything is fully visible. When progress is
+  // defined (DrawArrow), fade in with the line draw so frame 0 doesn't
+  // show heads/labels before the stroke has started.
+  const reveal = progress !== undefined ? Math.max(0, Math.min(1, progress)) : 1;
 
   const d = points
     .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
@@ -136,6 +167,7 @@ export const Arrow: React.FC<ArrowProps> = ({
             <path
               d={`M 0 0 L ${headSize} ${headSize / 2} L 0 ${headSize} Z`}
               fill={color}
+              opacity={reveal}
             />
           </marker>
           <marker
@@ -150,6 +182,7 @@ export const Arrow: React.FC<ArrowProps> = ({
             <path
               d={`M 0 0 L ${headSize} ${headSize / 2} L 0 ${headSize} Z`}
               fill={color}
+              opacity={reveal}
             />
           </marker>
         </defs>
@@ -181,6 +214,7 @@ export const Arrow: React.FC<ArrowProps> = ({
             color: labelColor,
             whiteSpace: "nowrap",
             pointerEvents: "none",
+            opacity: reveal,
           }}
         >
           {label}
