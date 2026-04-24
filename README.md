@@ -2,22 +2,17 @@
 
 Reusable React + Remotion toolkit for generating ByteByteGo-style technical
 diagrams as PNGs and animated MP4s from the same component library. Includes
-a self-correction loop: a debug overlay and a headless collision checker that
-render the composition, extract every element's bounding box, and flag overlaps.
+a self-correction pipeline: a debug overlay and a headless collision checker
+that render the composition, extract every element's bounding box, and flag
+overlaps and arrow crossings before you ship.
 
-## Preview
+## Previews
 
-**px402 architecture** — private agent payments on MagicBlock PER:
+**Port Protocol** — programmable authorization layer for Solana:
 
-![px402 static](docs/samples/px402-static.png)
+![Port Protocol architecture](docs/samples/port-protocol-arch.png)
 
-**ByteByteGo fidelity clones** — B-Trees vs B+ Trees, LSM Trees, LSM Compaction:
-
-![B-Tree vs B+ Tree](docs/samples/btree-vs-bplus.png)
-
-![LSM Trees](docs/samples/lsm-trees.png)
-
-![LSM Compaction](docs/samples/lsm-compaction.png)
+**px402** — private agent payments on MagicBlock PER (15s MP4):
 
 Animated MP4 sample at [`docs/samples/px402-animated.mp4`](docs/samples/px402-animated.mp4).
 
@@ -27,7 +22,7 @@ Off-the-shelf tools (Mermaid, D2, Graphviz) don't produce the ByteByteGo
 aesthetic — pastel cards, pill-labelled panels, typography-heavy layouts.
 That look is typically hand-crafted in draw.io. This repo brings it back
 into code: one set of React components, one palette, static PNG and
-animated MP4 out of the same source.
+animated MP4 from the same source.
 
 ## Stack
 
@@ -36,40 +31,88 @@ animated MP4 out of the same source.
 - `@remotion/google-fonts` for Inter + JetBrains Mono
 - H.264 / yuv420p MP4 output tuned for Twitter/X specs
 
-## Quickstart
+## How to use this
+
+There are two ways to drive the kit:
+
+### 1. Directly, writing compositions by hand
 
 ```bash
+git clone git@github.com:Allen-Saji/diagram-kit.git
+cd diagram-kit
 npm install
-npx remotion studio                  # live preview
+npx remotion studio                  # live preview in your browser
 ```
+
+Create a new file under `src/compositions/projects/<Name>.tsx`, register it
+in `src/Root.tsx`, then render. See [Adding a new diagram](#adding-a-new-diagram)
+below for the full ritual.
+
+### 2. Via the companion Claude Code skill (recommended)
+
+This repo ships with a [Claude Code](https://claude.com/claude-code) skill that
+encodes the full kit API, composition workflow, and all the conventions the
+checker enforces. Install it to your global skills folder:
+
+```bash
+mkdir -p ~/.claude/skills/diagram-kit
+curl -o ~/.claude/skills/diagram-kit/SKILL.md \
+  https://raw.githubusercontent.com/Allen-Saji/diagram-kit/main/SKILL.md
+```
+
+Once installed, any session where you say *"diagram the px402 flow"*,
+*"visualize the Port Protocol architecture"*, or *"make a BBG-style animated
+MP4 of this"* will pick up the skill, read the full kit surface area, draft
+a composition, iterate against the checker, and render final assets — without
+you re-reading `src/kit/*.tsx` every time.
+
+The skill lives in the repo root as `SKILL.md` so it stays versioned with the
+code it describes.
+
+### Best-use workflow
+
+1. **Describe the system** you want to diagram (architecture, sequence, or
+   flow). The skill will pick the right primitives.
+2. **Let the skill draft** the composition in `src/compositions/projects/`
+   with every element tagged for the collision checker.
+3. **Iterate with debug overlay** — `scripts/iterate.sh <Name> --debug`
+   renders a 0.5x preview with red bbox outlines and labels on every placed
+   kit element.
+4. **Run the checker** — `node scripts/check.mjs <Name>` flags arrow-vs-card
+   crossings, orphan text in the path of an arrow, and primitive overlaps.
+   Zero collisions = ready to render.
+5. **Render** — `scripts/render-png.sh <Name> hd` for a 2x retina still,
+   `scripts/render-mp4.sh <Name> tweet-16x9` for a Twitter-ready MP4.
+
+## Render commands
 
 Render a still to PNG:
 
 ```bash
-scripts/render-png.sh Px402Static           # native composition dims
-scripts/render-png.sh Px402Static hd        # 2x density for retina
+scripts/render-png.sh <Name>           # native composition dims
+scripts/render-png.sh <Name> hd        # 2x density for retina
 ```
 
 Render an animated composition to MP4:
 
 ```bash
-scripts/render-mp4.sh Px402Animated                # 1920 x 1080, 8 Mbps
-scripts/render-mp4.sh Px402Animated tweet-sq       # 1080 x 1080
+scripts/render-mp4.sh <Name>                # 1920 x 1080, 8 Mbps
+scripts/render-mp4.sh <Name> tweet-sq       # 1080 x 1080
 ```
 
 Iterate on a composition (fast, low-res, with optional debug overlay):
 
 ```bash
-scripts/iterate.sh Px402Static               # out/iter/Px402Static.png
-scripts/iterate.sh Px402Static --debug       # out/iter/Px402Static.debug.png
-scripts/iterate.sh Px402Static --full        # same as render-png.sh but via scale=1
+scripts/iterate.sh <Name>               # out/iter/<Name>.png
+scripts/iterate.sh <Name> --debug       # out/iter/<Name>.debug.png
+scripts/iterate.sh <Name> --full        # same as render-png.sh but scale=1
 ```
 
-Check a composition for element collisions (headless, deterministic):
+Check a composition for collisions (headless, deterministic):
 
 ```bash
-node scripts/check.mjs Px402Static           # pass/fail + JSON report
-node scripts/check.mjs Px402Static --min-area=32
+node scripts/check.mjs <Name>           # pass/fail + JSON report
+node scripts/check.mjs <Name> --min-area=32
 ```
 
 Outputs land in `out/`. Committed reference renders live in `docs/samples/`.
@@ -96,6 +139,10 @@ aspect ratio matches the composition's `<Still width/height>`:
 
 Non-premium X upload limits: <=140 s, <=512 MB, H.264/AAC MP4.
 
+**Important:** set your composition's `<Canvas w h>` and the `<Composition
+width height>` in `Root.tsx` to match the preset you'll render at. A 1600x1000
+canvas rendered as `tweet-16x9` (1920x1080) will be letterboxed/padded.
+
 ## Project layout
 
 ```
@@ -109,17 +156,23 @@ src/
     Card.tsx                  colored rounded card (title + subtitle)
     TreeNode.tsx              B-tree / B+ tree node
     FlowBox.tsx               rounded flow step
-    Arrow.tsx                 straight/elbow arrows with optional label + draw-in
+    Arrow.tsx                 straight/elbow arrows with label + draw-in
     Annotation.tsx            red/gray italic side notes
+    Label.tsx                 non-italic section header (tracked)
     Title.tsx                 headline with color accent + right slot
   animation/
     primitives.tsx            Appear, ScaleIn, DrawArrow, Pulse, Hold, Typewriter
   compositions/
-    BTreeVsBPlus.tsx          B-Tree vs B+ Tree (BBG reference, top row)
-    LsmTrees.tsx              LSM write + read paths (BBG reference)
-    LsmCompaction.tsx         Size-tiered vs leveled compaction (BBG reference)
-    Px402Static.tsx           px402 architecture, static sequence diagram
-    Px402Animated.tsx         px402 architecture, 15s MP4 version
+    fidelity/                 ByteByteGo reference clones
+      BTreeVsBPlus.tsx
+      LsmTrees.tsx
+      LsmCompaction.tsx
+    projects/                 real project architecture diagrams
+      Px402Static.tsx
+      Px402Animated.tsx
+      PortProtocolArch.tsx
+      DiagramKitArch.tsx
+      DiagramKitArchAnimated.tsx
   Root.tsx                    registers Still / Composition
   index.ts                    Remotion entry point
 
@@ -130,25 +183,29 @@ scripts/
   check.mjs                   headless collision checker with JSON report
 
 docs/samples/                 committed reference PNGs + MP4
+SKILL.md                      Claude Code skill definition
 ```
 
-## Self-correction loop
+## Self-correction pipeline
 
-The kit supports a closed-loop "render, inspect, fix" workflow.
+The kit supports a closed-loop "render, inspect, fix" workflow that catches
+layout bugs deterministically.
 
-1. Every kit primitive (`Card`, `Panel`, `TreeNode`, `FlowBox`, `Annotation`)
-   accepts an optional `debugId` prop. Pass a composition-unique string for
-   every placed element.
+1. Every kit primitive accepts an optional `debugId`. Pass a composition-unique
+   string for every placed element.
 2. Each composition accepts a `debug?: boolean` prop and forwards it to
    `Canvas`, which wraps children in a `DebugProvider`.
-3. When `debug` is on, `DebugOverlay` renders a red dashed outline plus a
-   small top-left tag (`kind·debugId`) for every element. It also emits
-   the element's measured bounding box via `console.log("BBOX::…")` in a
-   `useLayoutEffect`.
-4. `scripts/check.mjs` bundles the project, calls `renderStill` with a
-   custom `onBrowserLog` handler that captures the `BBOX::` lines, runs a
-   pairwise overlap check with an area threshold, and emits a JSON report
-   plus a terminal summary. Exits 1 on any overlap.
+3. When debug emit is on:
+   - `DebugOverlay` emits `BBOX::{…}` for every tagged element.
+   - `Arrow` emits `ARROW::{segments:…}` for every tagged arrow.
+   - `Canvas` walks the DOM post-layout and emits `ORPHAN::{rect:…}` for
+     any text node not inside a kit primitive — catches raw `<div>` text
+     that the checker would otherwise miss.
+4. `scripts/check.mjs` captures all three log streams via Remotion's
+   `onBrowserLog`, runs pairwise bbox overlap for cards, and Liang-Barsky
+   segment-vs-rect intersection for arrows against cards + orphan text
+   (5 px margin so arrows at card edges don't false-positive). Exits 1 on
+   any collision.
 
 Typical loop:
 
@@ -158,7 +215,7 @@ scripts/iterate.sh MyDiagram --debug
 
 # verify it's clean before shipping
 node scripts/check.mjs MyDiagram
-# ✓ MyDiagram: 12 elements, 0 collisions
+# ✓ MyDiagram: 12 elements + 5 arrows + 0 orphan text, 0 collisions
 
 # final render
 scripts/render-png.sh MyDiagram hd
@@ -166,16 +223,16 @@ scripts/render-png.sh MyDiagram hd
 
 ## Adding a new diagram
 
-1. Create `src/compositions/MyDiagram.tsx`. Accept an optional
+1. Create `src/compositions/projects/<Name>.tsx`. Accept an optional
    `debug?: boolean` prop and thread it into `Canvas`. Compose with
    `Canvas`, `At`, `Card`, `TreeNode`, `FlowBox`, `Arrow`,
-   `Annotation`, `Title`. Give every placed kit primitive a stable
-   `debugId`.
+   `Annotation`, `Label`, `Title`. Give every placed kit primitive a
+   stable `debugId`.
 2. Register in `src/Root.tsx` as `<Still>` (PNG) or `<Composition>` (MP4),
    plus a `<Still>` variant in the `debug` folder with
    `defaultProps={{ debug: true }}` so `iterate.sh --debug` finds it.
-3. Render: `scripts/render-png.sh MyDiagram blog` or
-   `scripts/render-mp4.sh MyDiagram tweet-16x9`.
+3. Render: `scripts/render-png.sh <Name> blog` or
+   `scripts/render-mp4.sh <Name> tweet-16x9`.
 
 For animated variants: wrap elements in `Appear`, `DrawArrow`,
 `Pulse`, or `ScaleIn` from `src/animation`. All animation must go
@@ -184,7 +241,7 @@ Tailwind `animate-*` classes don't render correctly in Remotion.
 
 ## Palette
 
-Six pastel families sampled from ByteByteGo reference diagrams:
+Eight pastel families sampled from ByteByteGo reference diagrams:
 mint, peach, blue, yellow, pink, purple, plus lavender and gray
 neutrals. Each family exposes matching `bg`, `border`, and `text`
 colors designed to read together. See `src/kit/palette.ts`.
@@ -196,6 +253,11 @@ colors designed to read together. See `src/kit/palette.ts`.
   over every pixel, the way ByteByteGo diagrams are hand-placed.
 - **One font family active.** Inter for prose, JetBrains Mono for
   addresses / hashes / log fragments.
+- **No raw `<div>` for text.** Use `Label`, `Annotation`, or `Title`.
+  The orphan walker catches bare divs at check time.
+- **Panel takes no `debugId`.** Panels are semantic containers that
+  wrap their children; tagging a Panel makes the checker flag every
+  contained card. The panel's pill title auto-registers separately.
 - **Annotation tones.** Red italic for walkthroughs. Gray italic for
   ambient notes.
 - **debugId on every placed element.** Keeps the collision checker
