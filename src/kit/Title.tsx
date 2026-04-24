@@ -1,6 +1,7 @@
 import React from "react";
 import { palette, PaletteColor, ink } from "./palette";
 import { fonts } from "./fonts";
+import { DebugOverlay } from "./Debug";
 
 type TitleProps = {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ type TitleProps = {
   rightSlot?: React.ReactNode;
   size?: number;
   style?: React.CSSProperties;
+  debugId?: string;
 };
 
 export const Title: React.FC<TitleProps> = ({
@@ -18,9 +20,17 @@ export const Title: React.FC<TitleProps> = ({
   rightSlot,
   size = 44,
   style,
+  debugId,
 }) => {
   const p = palette[accentColor];
+  // Auto-id so the title headline is tracked as an obstacle.
+  const autoId =
+    debugId ??
+    (typeof children === "string"
+      ? `title:${children.toLowerCase().replace(/\s+/g, "-").slice(0, 40)}`
+      : "title:root");
   return (
+    <DebugOverlay id={autoId} kind="title">
     <div
       style={{
         display: "flex",
@@ -62,6 +72,7 @@ export const Title: React.FC<TitleProps> = ({
       </div>
       {rightSlot ? (
         <div
+          data-dk-skip="title-rightslot"
           style={{
             fontSize: size * 0.45,
             fontWeight: 700,
@@ -73,5 +84,6 @@ export const Title: React.FC<TitleProps> = ({
         </div>
       ) : null}
     </div>
+    </DebugOverlay>
   );
 };

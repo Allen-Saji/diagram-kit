@@ -200,6 +200,7 @@ export const Arrow: React.FC<ArrowProps> = ({
       </svg>
       {label && labelPos ? (
         <div
+          data-dk-skip="arrow-label"
           style={{
             position: "absolute",
             left: labelPos.x,

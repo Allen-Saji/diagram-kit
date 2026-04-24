@@ -26,6 +26,18 @@ export const Panel: React.FC<PanelProps> = ({
   borderColor = frame.border,
   debugId,
 }) => {
+  // Auto-id for the pill title so its text gets tracked as an obstacle
+  // for arrow intersection. Falls back to a slugified title when no
+  // explicit debugId is given — the convention is Panels don't take
+  // debugId (they'd false-positive overlap every contained child), so
+  // the pill is the part we actually want to track.
+  const pillId =
+    debugId != null
+      ? `${debugId}-pill`
+      : typeof title === "string" && title.length > 0
+      ? `panel-pill:${title.toLowerCase().replace(/\s+/g, "-").slice(0, 40)}`
+      : undefined;
+
   return (
     <DebugOverlay id={debugId} kind="panel">
     <div
@@ -53,21 +65,23 @@ export const Panel: React.FC<PanelProps> = ({
             pointerEvents: "none",
           }}
         >
-          <div
-            style={{
-              background: frame.bg,
-              border: `2px solid ${borderColor}`,
-              borderRadius: 999,
-              padding: "4px 24px",
-              fontSize: 22,
-              fontWeight: 700,
-              color: ink.heading,
-              letterSpacing: -0.1,
-              lineHeight: 1.2,
-            }}
-          >
-            {title}
-          </div>
+          <DebugOverlay id={pillId} kind="panel-title">
+            <div
+              style={{
+                background: frame.bg,
+                border: `2px solid ${borderColor}`,
+                borderRadius: 999,
+                padding: "4px 24px",
+                fontSize: 22,
+                fontWeight: 700,
+                color: ink.heading,
+                letterSpacing: -0.1,
+                lineHeight: 1.2,
+              }}
+            >
+              {title}
+            </div>
+          </DebugOverlay>
         </div>
       ) : null}
       {children}

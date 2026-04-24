@@ -69,7 +69,8 @@ const CanvasRoot: React.FC<{
 
   useLayoutEffect(() => {
     if (!emit || !ref.current) return;
-    const r = ref.current.getBoundingClientRect();
+    const root = ref.current;
+    const r = root.getBoundingClientRect();
     // eslint-disable-next-line no-console
     console.log(
       `CANVAS::${JSON.stringify({
@@ -77,6 +78,59 @@ const CanvasRoot: React.FC<{
         y: Math.round(r.y),
       })}`,
     );
+
+    // Orphan text detection — any rendered text whose ancestors don't
+    // include a [data-dk-id] element is not tracked by BBOX::. Emit an
+    // ORPHAN:: rect for each so scripts/check.mjs can still treat it
+    // as an obstacle for arrow intersection. This catches section
+    // headers / subtitles written as raw <div> inside <At>.
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      null,
+    );
+    const reported = new Set<HTMLElement>();
+    let node: Node | null;
+    // eslint-disable-next-line no-cond-assign
+    while ((node = walker.nextNode())) {
+      const text = (node.textContent ?? "").trim();
+      if (!text) continue;
+      const parent = node.parentElement;
+      if (!parent) continue;
+      // Climb ancestors looking for either:
+      //  - data-dk-id: text is part of a tracked kit primitive, skip.
+      //  - data-dk-skip: text is intentionally floating (e.g. arrow
+      //    labels that sit on their own arrow's path), skip.
+      let ancestor: HTMLElement | null = parent;
+      let tracked = false;
+      while (ancestor && ancestor !== root) {
+        if (
+          ancestor.hasAttribute("data-dk-id") ||
+          ancestor.hasAttribute("data-dk-skip")
+        ) {
+          tracked = true;
+          break;
+        }
+        ancestor = ancestor.parentElement;
+      }
+      if (tracked) continue;
+      // Orphan text — report the parent element's rect once.
+      if (reported.has(parent)) continue;
+      reported.add(parent);
+      const bb = parent.getBoundingClientRect();
+      // eslint-disable-next-line no-console
+      console.log(
+        `ORPHAN::${JSON.stringify({
+          text: text.slice(0, 60),
+          rect: {
+            x: Math.round(bb.x),
+            y: Math.round(bb.y),
+            w: Math.round(bb.width),
+            h: Math.round(bb.height),
+          },
+        })}`,
+      );
+    }
   }, [emit]);
 
   return (

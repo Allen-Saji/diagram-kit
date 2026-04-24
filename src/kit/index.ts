@@ -9,3 +9,4 @@ export * from "./FlowBox";
 export * from "./Arrow";
 export * from "./Annotation";
 export * from "./Title";
+export * from "./Label";
