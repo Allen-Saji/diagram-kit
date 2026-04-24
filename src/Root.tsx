@@ -1,12 +1,13 @@
 import "./index.css";
 import { Composition, Still, Folder } from "remotion";
-import { BTreeVsBPlus } from "./compositions/BTreeVsBPlus";
-import { LsmTrees } from "./compositions/LsmTrees";
-import { LsmCompaction } from "./compositions/LsmCompaction";
-import { Px402Static } from "./compositions/Px402Static";
-import { Px402Animated } from "./compositions/Px402Animated";
-import { DiagramKitArch } from "./compositions/DiagramKitArch";
-import { DiagramKitArchAnimated } from "./compositions/DiagramKitArchAnimated";
+import { BTreeVsBPlus } from "./compositions/fidelity/BTreeVsBPlus";
+import { LsmTrees } from "./compositions/fidelity/LsmTrees";
+import { LsmCompaction } from "./compositions/fidelity/LsmCompaction";
+import { Px402Static } from "./compositions/projects/Px402Static";
+import { Px402Animated } from "./compositions/projects/Px402Animated";
+import { DiagramKitArch } from "./compositions/projects/DiagramKitArch";
+import { DiagramKitArchAnimated } from "./compositions/projects/DiagramKitArchAnimated";
+import { PortProtocolArch } from "./compositions/projects/PortProtocolArch";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -63,10 +64,25 @@ export const RemotionRoot: React.FC = () => {
           durationInFrames={15 * 30}
         />
       </Folder>
+      <Folder name="port-protocol">
+        <Still
+          id="PortProtocolArch"
+          component={PortProtocolArch}
+          width={1600}
+          height={1000}
+        />
+      </Folder>
       <Folder name="debug">
         <Still
           id="Px402StaticDebug"
           component={Px402Static}
+          width={1600}
+          height={1000}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="Px402AnimatedDebug"
+          component={Px402Animated}
           width={1600}
           height={1000}
           defaultProps={{ debug: true }}
@@ -95,6 +111,13 @@ export const RemotionRoot: React.FC = () => {
         <Still
           id="DiagramKitArchDebug"
           component={DiagramKitArch}
+          width={1600}
+          height={1000}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="PortProtocolArchDebug"
+          component={PortProtocolArch}
           width={1600}
           height={1000}
           defaultProps={{ debug: true }}

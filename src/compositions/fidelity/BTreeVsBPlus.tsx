@@ -10,7 +10,7 @@ import {
   palette,
   ink,
   fonts,
-} from "../kit";
+} from "../../kit";
 
 export type BTreeVsBPlusProps = {
   /** Toggle the debug overlay (red bbox outlines + labels). */

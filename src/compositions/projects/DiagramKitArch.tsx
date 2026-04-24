@@ -8,9 +8,9 @@ import {
   Arrow,
   Annotation,
   Title,
+  Label,
   ink,
-  fonts,
-} from "../kit";
+} from "../../kit";
 
 export type DiagramKitArchProps = {
   /** Toggle the debug overlay (red bbox outlines + labels on every kit element). */
@@ -40,16 +40,9 @@ export const DiagramKitArch: React.FC<DiagramKitArchProps> = ({
         </div>
       </At>
       <At x={120} y={106}>
-        <div
-          style={{
-            fontFamily: fonts.sans,
-            fontSize: 17,
-            color: ink.muted,
-            fontWeight: 500,
-          }}
-        >
+        <Label debugId="subtitle" size={17} weight={500} color={ink.muted}>
           React + Remotion kit. One source tree, static PNG and animated MP4 out.
-        </div>
+        </Label>
       </At>
 
       <Body />

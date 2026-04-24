@@ -9,7 +9,7 @@ import {
   palette,
   ink,
   fonts,
-} from "../kit";
+} from "../../kit";
 
 export type LsmCompactionProps = {
   debug?: boolean;

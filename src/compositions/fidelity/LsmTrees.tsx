@@ -10,7 +10,7 @@ import {
   palette,
   ink,
   fonts,
-} from "../kit";
+} from "../../kit";
 
 export type LsmTreesProps = {
   debug?: boolean;

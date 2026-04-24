@@ -10,7 +10,7 @@ import {
   ink,
   fonts,
   frame as frameColor,
-} from "../kit";
+} from "../../kit";
 
 export type Px402StaticProps = {
   /** Toggle the debug overlay (red bbox outlines + labels on every kit element). */
