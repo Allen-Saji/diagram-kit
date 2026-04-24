@@ -42,8 +42,8 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           id="Px402Animated"
           component={Px402Animated}
-          width={1600}
-          height={1000}
+          width={1920}
+          height={1080}
           fps={30}
           durationInFrames={15 * 30}
         />
@@ -83,8 +83,8 @@ export const RemotionRoot: React.FC = () => {
         <Still
           id="Px402AnimatedDebug"
           component={Px402Animated}
-          width={1600}
-          height={1000}
+          width={1920}
+          height={1080}
           defaultProps={{ debug: true }}
         />
         <Still

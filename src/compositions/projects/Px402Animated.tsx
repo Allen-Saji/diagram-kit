@@ -42,10 +42,10 @@ export const Px402Animated: React.FC<Px402AnimatedProps> = ({
   debug = false,
 }) => {
   return (
-    <Canvas w={1600} h={1000} debug={debug}>
+    <Canvas w={1920} h={1080} debug={debug}>
       <Appear at={0.0} duration={0.5} slideY={-12}>
-        <At x={60} y={40}>
-          <div style={{ width: 1480 }}>
+        <At x={72} y={48}>
+          <div style={{ width: 1776 }}>
             <Title accentColor="blue" rightSlot="px402 · allensaji.dev">
               Private Agent Payments on MagicBlock PER
             </Title>
@@ -53,7 +53,7 @@ export const Px402Animated: React.FC<Px402AnimatedProps> = ({
         </At>
       </Appear>
       <Appear at={0.25} duration={0.5}>
-        <At x={120} y={106}>
+        <At x={144} y={118}>
           <Label debugId="subtitle" size={17} weight={500} color={ink.muted}>
             Same x402 flow. Private settlement. Stateless server.
           </Label>
@@ -65,10 +65,11 @@ export const Px402Animated: React.FC<Px402AnimatedProps> = ({
   );
 };
 
-const LANE = { agent: 200, server: 630, per: 1000, sub: 1400 } as const;
+// Lanes scaled from the 1600-wide design by 1.2x so they fill 1920.
+const LANE = { agent: 240, server: 760, per: 1200, sub: 1680 } as const;
 // Lifelines start below actor cards (card bottom ~222 at y=150 top-center).
 const LIFELINE_TOP = 228;
-const LIFELINE_BOTTOM = 810;
+const LIFELINE_BOTTOM = 880;
 
 const FlowBodyAnimated: React.FC = () => {
   return (
@@ -187,7 +188,7 @@ const FlowBodyAnimated: React.FC = () => {
 
       {/* Annotations — sit in the gap between step 2 (y=325) and
           step 3 (y=400) arrows. */}
-      <At x={265} y={340}>
+      <At x={305} y={340}>
         <Appear at={5.6} duration={0.4}>
           <Annotation
             tone="red"
@@ -203,7 +204,7 @@ const FlowBodyAnimated: React.FC = () => {
           </Annotation>
         </Appear>
       </At>
-      <At x={740} y={340}>
+      <At x={905} y={340}>
         <Appear at={5.8} duration={0.4}>
           <Annotation
             tone="red"
@@ -293,14 +294,14 @@ const FlowBodyAnimated: React.FC = () => {
       />
 
       {/* Footer — the punchline */}
-      <At x={60} y={850}>
+      <At x={72} y={920}>
         <Appear at={11.2} duration={0.6} slideY={24}>
           <Card
             color="mint"
             padding="18px 28px"
             radius={14}
             align="center"
-            style={{ width: 1480 }}
+            style={{ width: 1776 }}
             debugId="footer-callout"
           >
             <div
