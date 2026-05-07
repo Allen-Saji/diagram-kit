@@ -15,6 +15,8 @@ import { FanArrowProbe } from "./examples/fidelity/FanArrowProbe";
 import { ChipsAndIconsProbe } from "./examples/fidelity/ChipsAndIconsProbe";
 import { PersonaProbe } from "./examples/fidelity/PersonaProbe";
 import { ErDiagramProbe } from "./examples/fidelity/ErDiagramProbe";
+import { RadialMindMapProbe } from "./examples/fidelity/RadialMindMapProbe";
+import { ShapesAndRatingsProbe } from "./examples/fidelity/ShapesAndRatingsProbe";
 // Aliased to either ../../../private/index.tsx (when present) or
 // ./private-stub.ts (the empty default). Resolved by remotion.config.ts.
 import { privateRegistrations } from "@private/comps";
@@ -99,6 +101,18 @@ export const RemotionRoot: React.FC = () => {
         <Still
           id="ErDiagramProbe"
           component={ErDiagramProbe}
+          width={1600}
+          height={780}
+        />
+        <Still
+          id="RadialMindMapProbe"
+          component={RadialMindMapProbe}
+          width={1600}
+          height={900}
+        />
+        <Still
+          id="ShapesAndRatingsProbe"
+          component={ShapesAndRatingsProbe}
           width={1600}
           height={780}
         />
@@ -198,6 +212,20 @@ export const RemotionRoot: React.FC = () => {
         <Still
           id="ErDiagramProbeDebug"
           component={ErDiagramProbe}
+          width={1600}
+          height={780}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="RadialMindMapProbeDebug"
+          component={RadialMindMapProbe}
+          width={1600}
+          height={900}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="ShapesAndRatingsProbeDebug"
+          component={ShapesAndRatingsProbe}
           width={1600}
           height={780}
           defaultProps={{ debug: true }}

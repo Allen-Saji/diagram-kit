@@ -28,3 +28,7 @@ export * from "./AvatarChip";
 export * from "./RelationshipNode";
 export * from "./Cylinder";
 export * from "./IconNode";
+export * from "./Hexagon";
+export * from "./RadialMindMap";
+export * from "./Venn";
+export * from "./DotRating";
