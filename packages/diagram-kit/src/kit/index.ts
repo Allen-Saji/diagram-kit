@@ -16,3 +16,6 @@ export * from "./CodeBlock";
 export * from "./TerminalCard";
 export * from "./SwimLanes";
 export * from "./StageRail";
+export * from "./SubPanelGrid";
+export * from "./BeforeAfterSplit";
+export * from "./ComparisonTable";

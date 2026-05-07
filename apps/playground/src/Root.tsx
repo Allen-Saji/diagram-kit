@@ -8,6 +8,9 @@ import { DarkModeProbe } from "./examples/fidelity/DarkModeProbe";
 import { StepBadgeProbe } from "./examples/fidelity/StepBadgeProbe";
 import { SwimLanesProbe } from "./examples/fidelity/SwimLanesProbe";
 import { PanelVariantsProbe } from "./examples/fidelity/PanelVariantsProbe";
+import { SubPanelGridProbe } from "./examples/fidelity/SubPanelGridProbe";
+import { BeforeAfterSplitProbe } from "./examples/fidelity/BeforeAfterSplitProbe";
+import { ComparisonTableProbe } from "./examples/fidelity/ComparisonTableProbe";
 // Aliased to either ../../../private/index.tsx (when present) or
 // ./private-stub.ts (the empty default). Resolved by remotion.config.ts.
 import { privateRegistrations } from "@private/comps";
@@ -52,6 +55,24 @@ export const RemotionRoot: React.FC = () => {
           component={PanelVariantsProbe}
           width={1600}
           height={780}
+        />
+        <Still
+          id="SubPanelGridProbe"
+          component={SubPanelGridProbe}
+          width={1600}
+          height={780}
+        />
+        <Still
+          id="BeforeAfterSplitProbe"
+          component={BeforeAfterSplitProbe}
+          width={1600}
+          height={900}
+        />
+        <Still
+          id="ComparisonTableProbe"
+          component={ComparisonTableProbe}
+          width={1600}
+          height={760}
         />
       </Folder>
       <Folder name="debug">
@@ -102,6 +123,27 @@ export const RemotionRoot: React.FC = () => {
           component={PanelVariantsProbe}
           width={1600}
           height={780}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="SubPanelGridProbeDebug"
+          component={SubPanelGridProbe}
+          width={1600}
+          height={780}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="BeforeAfterSplitProbeDebug"
+          component={BeforeAfterSplitProbe}
+          width={1600}
+          height={900}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="ComparisonTableProbeDebug"
+          component={ComparisonTableProbe}
+          width={1600}
+          height={760}
           defaultProps={{ debug: true }}
         />
       </Folder>
