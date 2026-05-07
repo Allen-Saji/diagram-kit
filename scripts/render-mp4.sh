@@ -32,21 +32,31 @@ case "$PRESET" in
   *)          echo "unknown preset: $PRESET" >&2; exit 1 ;;
 esac
 
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+APP_DIR="$REPO_ROOT/apps/playground"
+
+# Auto-route output by detected theme (matches render-png.sh convention).
 if [ -z "$OUT" ]; then
-  OUT="out/${COMP}-${PRESET}.mp4"
+  COMP_FILE=$(find "$APP_DIR/src/examples" "$REPO_ROOT/private/projects" -name "${COMP}.tsx" -type f 2>/dev/null | head -1)
+  THEME="light"
+  if [ -n "$COMP_FILE" ]; then
+    DETECTED=$(grep -oE 'theme="(legacy|light|dark)"' "$COMP_FILE" | head -1 | sed -E 's/theme="(.*)"/\1/' || true)
+    if [ -n "$DETECTED" ]; then
+      THEME="$DETECTED"
+    fi
+  fi
+  OUT="$REPO_ROOT/out/${THEME}/${COMP}-${PRESET}.mp4"
 fi
 
 mkdir -p "$(dirname "$OUT")"
 
-cd "$(dirname "$0")/.."
-
 echo "rendering ${COMP} → ${OUT} (${W}x${H} @ ${BITRATE})"
-npx remotion render "$COMP" "$OUT" \
+(cd "$APP_DIR" && npx remotion render "$COMP" "$OUT" \
   --width="$W" \
   --height="$H" \
   --codec=h264 \
   --video-bitrate="$BITRATE" \
-  --pixel-format=yuv420p
+  --pixel-format=yuv420p)
 
 # Print the file size so we can check against Twitter's 512MB non-premium limit.
 if [ -f "$OUT" ]; then

@@ -21,6 +21,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, "..");
+const playgroundRoot = path.join(projectRoot, "apps", "playground");
 
 const COMP = process.argv[2];
 if (!COMP) {
@@ -46,10 +47,43 @@ const RESET = "\x1b[0m";
 
 async function main() {
   console.log(`${DIM}bundling project…${RESET}`);
-  const serveUrl = await bundle({
-    entryPoint: path.join(projectRoot, "src/index.ts"),
-    webpackOverride: (config) => config,
-  });
+  // Replicate the playground webpack config: enable Tailwind + alias
+  // `@private/comps` to either the private registry (when present) or
+  // the empty stub. The CLI consults `remotion.config.ts` automatically;
+  // the programmatic `bundle()` does not, so do it here.
+  process.chdir(playgroundRoot);
+  const { enableTailwind } = await import("@remotion/tailwind-v4");
+  const privateIndex = path.join(projectRoot, "private", "index.tsx");
+  const privateAliasTarget = (await fs
+    .stat(privateIndex)
+    .then(() => privateIndex)
+    .catch(() => path.join(playgroundRoot, "src", "private-stub.ts")));
+  const privatePublicDir = path.join(projectRoot, "private", "public");
+  const hasPrivatePublicDir = await fs
+    .stat(privatePublicDir)
+    .then(() => true)
+    .catch(() => false);
+
+  const bundleOpts = {
+    entryPoint: path.join(playgroundRoot, "src/index.ts"),
+    webpackOverride: (config) => {
+      const withTailwind = enableTailwind(config);
+      return {
+        ...withTailwind,
+        resolve: {
+          ...(withTailwind.resolve ?? {}),
+          alias: {
+            ...((withTailwind.resolve ?? {}).alias ?? {}),
+            "@private/comps": privateAliasTarget,
+          },
+        },
+      };
+    },
+  };
+  if (hasPrivatePublicDir) {
+    bundleOpts.publicDir = privatePublicDir;
+  }
+  const serveUrl = await bundle(bundleOpts);
 
   console.log(`${DIM}selecting composition ${COMP}…${RESET}`);
   const composition = await selectComposition({
