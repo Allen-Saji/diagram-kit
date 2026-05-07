@@ -17,6 +17,9 @@ importers:
       '@remotion/tailwind-v4':
         specifier: 4.0.451
         version: 4.0.451(@remotion/bundler@4.0.451(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(webpack@5.105.0)
+      '@types/react':
+        specifier: 19.2.7
+        version: 19.2.7
       prettier:
         specifier: 3.8.1
         version: 3.8.1
