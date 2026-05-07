@@ -266,6 +266,265 @@ Props: `origin` (required `{x, y}` top-left), `width` (required total layout wid
 
 `Stage = { id, label, icon, color?: PaletteColor, content }` — `content` is rendered in the right band with a top-left origin.
 
+### SubPanelGrid
+
+N-by-M grid of independently-titled `Panel`s. BBG uses this for multi-concept reference cards ("4 caching strategies", "5 consensus protocols").
+
+```tsx
+<SubPanelGrid
+  cols={2}
+  panelHeight={240}
+  style={{ width: 1480 }}
+  panels={[
+    { id: "a", title: "Cache Aside", content: <CardLayout /> },
+    { id: "b", title: "Read Through", content: <CardLayout /> },
+    { id: "c", title: "Write Through", content: <CardLayout /> },
+    { id: "d", title: "Write Back", content: <CardLayout /> },
+  ]}
+/>
+```
+
+Props: `panels` (required `SubPanelGridItem[]`), `cols` (default 2), `gap` (default 32), `panelHeight` (default 240), `style` (must set `width`).
+
+`SubPanelGridItem = { id, title, content, variant? }` — `variant` falls through to the underlying Panel (`solid` or `dashed`). The wrapper itself emits no BBOX; cell Panels register their pills as usual.
+
+### BeforeAfterSplit
+
+Two stacked `Panel`s separated by a labeled divider chip. Canonical "without/with" comparison layout.
+
+```tsx
+<BeforeAfterSplit
+  width={1480}
+  panelHeight={240}
+  before={{ title: "Without batching", content: <Layout /> }}
+  divider={{ label: "Apply request batching", color: "blue" }}
+  after={{ title: "With batching", content: <Layout /> }}
+/>
+```
+
+Props: `before`/`after` (`{ title, content }`), `divider` (`{ label, color?, showArrows? }`), `width` (required), `panelHeight` (default 280), `dividerHeight` (default 80), `style`.
+
+The divider chip pulls colors from the supplied palette swatch and renders inline-SVG triangle markers (font-portable, no Unicode arrows). Set `divider.showArrows = false` for an unadorned chip.
+
+### ComparisonTable
+
+Feature-matrix table — left column lists dimensions with numbered `StepBadge` (outline) markers; remaining columns are option cells. Use for MCP-vs-Skills, Postgres-vs-MySQL, Claude-vs-OpenClaw posts.
+
+```tsx
+<ComparisonTable
+  width={1480}
+  labelWidth={280}
+  rowHeight={92}
+  columns={[
+    { id: "claude", label: "Claude" },
+    { id: "openclaw", label: "OpenClaw" },
+  ]}
+  rows={[
+    {
+      id: "control",
+      label: "Browser control",
+      cells: [
+        <Card debugId="claude-ctrl" color="mint" title="Headless only" />,
+        <Card debugId="oc-ctrl" color="blue" title="Real Chrome" />,
+      ],
+    },
+  ]}
+/>
+```
+
+Props: `columns` (required `ComparisonTableColumn[]`), `rows` (required `ComparisonTableRow[]`), `width` (required), `rowHeight` (default 80), `headerHeight` (default 60), `labelWidth` (default 240), `badgeColor` (default `mint`).
+
+No `debugId` on the table itself (semantic container, like `Panel`); cells inside should carry their own `debugId` if they participate in collision checks.
+
+### FanArrow
+
+One source -> N targets, all branches sharing the same origin. Place at canvas top level (NOT inside `<At>`); coordinates are canvas-absolute.
+
+```tsx
+<FanArrow
+  debugId="repl"
+  from={{ x: 320, y: 420 }}
+  targets={[
+    { id: "a", to: { x: 1100, y: 240 } },
+    { id: "b", to: { x: 1100, y: 420 }, label: "primary" },
+    { id: "c", to: { x: 1100, y: 600 } },
+  ]}
+/>
+```
+
+Props: `from` (required), `targets` (required `FanArrowTarget[]`), `color`, `strokeWidth` (default 2), `headSize` (default 10), `progress`, `dashed`, `debugId`.
+
+Each branch's `Arrow` gets `debugId = ${parentId}-${target.id}`, so the collision checker can distinguish branches.
+
+### TagChip
+
+Tight monospace pill for short uppercase verbs (HTTP methods, CRUD verbs, role markers).
+
+```tsx
+<TagChip color="mint">CREATE</TagChip>
+<TagChip color="blue">READ</TagChip>
+<TagChip color="peach">UPDATE</TagChip>
+<TagChip color="pink">DELETE</TagChip>
+```
+
+Props: `children` (required string), `color` (required `PaletteColor`), `size` (default 13), `uppercase` (default true), `letterSpacing` (default 0.6), `style`, `debugId?`.
+
+Use for category markers; use `RelationshipNode` instead for ER-style "has"/"owns" labels.
+
+### IconBadge
+
+Small colored disc with an arbitrary icon node inside. Differs from `StepBadge` (which carries a sequence number).
+
+```tsx
+<IconBadge icon="U" color="blue" />
+<IconBadge icon={<svg>...</svg>} color="peach" variant="outline" size={40} />
+```
+
+Props: `icon` (required `ReactNode`), `color` (default `mint`), `size` (default 32), `variant` (`solid`|`outline`, default `solid`), `iconSize`, `style`, `debugId?`.
+
+### StatusIcon
+
+Inline SVG check / X / exclamation. Default colors stay consistent across themes since the semantics are universal; override via `color` prop.
+
+```tsx
+<StatusIcon status="ok" />
+<StatusIcon status="fail" size={24} />
+<StatusIcon status="warn" />
+```
+
+Props: `status` (required `"ok" | "fail" | "warn"`), `color`, `size` (default 20), `strokeWidth` (default 3), `style`, `debugId?`.
+
+### LogoChip
+
+Brand logo image with optional caption inside a soft theme-tinted frame. Accepts `staticFile()` paths, inline `data:` SVGs, or remote URLs.
+
+```tsx
+<LogoChip src={staticFile("logos/anthropic.svg")} caption="Anthropic" />
+<LogoChip src="https://cdn.example.com/logo.png" width={120} framed={false} />
+```
+
+Props: `src` (required string), `caption`, `width` (default 80), `height` (default = `width`), `framed` (default true), `captionSize` (default 12), `alt`, `style`, `debugId?`.
+
+Uses plain `<img>` rather than Remotion's `<Img>` so the kit stays runtime-agnostic. For remote URLs in Remotion renders, ensure the image is preloaded — `staticFile()` is the safest choice.
+
+### AvatarChip
+
+Round persona head + name label below. Falls back to a colored circle showing the first letter of `name` when no `src` is provided.
+
+```tsx
+<AvatarChip name="Sarah" subtitle="writer A" src={staticFile("avatars/sarah.png")} />
+<AvatarChip name="Alex" color="blue" />  // fallback to colored circle with "A"
+```
+
+Props: `name` (required string), `src`, `color` (default `mint`), `size` (default 64), `subtitle`, `alt`, `style`, `debugId?`.
+
+### RelationshipNode
+
+Small oval pill for ER relationship labels ("has", "owns", "writes to"). Sentence-case sans-serif — visually distinct from `TagChip` (uppercase mono).
+
+```tsx
+<RelationshipNode>has</RelationshipNode>
+<RelationshipNode tone="accent" color="mint">owns</RelationshipNode>
+```
+
+Props: `children` (required string), `tone` (`accent`|`neutral`, default `neutral`), `color` (default `gray`), `size` (default 14), `style`, `debugId?`.
+
+Default `neutral` tone uses the theme's frame border (subdued, BBG canon for ER labels). `accent` uses a palette swatch when the relationship is the focal point.
+
+### Cylinder
+
+Stylized 3D database glyph rendered in SVG. Top ellipse rim, vertical body sides, front-arc-only bottom (the back of the bottom ellipse is hidden by the body).
+
+```tsx
+<Cylinder color="blue" label="Postgres" />
+<Cylinder color="peach" label="Redis" width={60} height={80} />
+```
+
+Props: `color` (required `PaletteColor`), `width` (default 80), `height` (default 100), `rim` (default = `width * 0.18`, clamped to >= 8), `label`, `labelSize` (default 14), `style`, `debugId?`.
+
+### IconNode
+
+Single primitive lumping multiple "object" glyphs under a `shape` variant. Supports `"document"` and `"server-rack"`; new shapes drop in alongside the internal switch.
+
+```tsx
+<IconNode shape="document" color="peach" label="Spec" />
+<IconNode shape="server-rack" color="purple" label="Production" />
+```
+
+Props: `shape` (required `IconNodeShape`), `color` (default `gray`), `width`/`height` (defaults vary by shape — document 60x80, server-rack 80x100), `label`, `labelSize` (default 14), `style`, `debugId?`.
+
+### Hexagon
+
+Regular hexagon with `flat` (default) or `pointy` orientation. SVG polygon with vertices computed from the chosen orientation; bounding-box width is fixed at `size` and height is derived (flat-top is wider than tall, pointy-top is the reverse).
+
+```tsx
+<Hexagon color="purple" size={120} label="Service A" />
+<Hexagon color="peach" size={100} orientation="pointy" />
+```
+
+Props: `color` (required `PaletteColor`), `size` (default 80), `orientation` (`flat`|`pointy`, default `flat`), `label`, `labelSize` (default 14), `style`, `debugId?`.
+
+Flat-top is BBG canon for radial mind-map hubs.
+
+### RadialMindMap
+
+Center hub plus 3-8 leaves arranged on a circle. Throws when the spoke count is outside `[3, 8]`. For arbitrary fan-out use `FanArrow` with manual leaf positions.
+
+```tsx
+<RadialMindMap
+  centerAt={{ x: 800, y: 510 }}
+  radius={260}
+  center={<Hexagon color="purple" size={150} label="Observability" />}
+  spokes={[
+    { id: "logs", content: <Card color="mint" title="Logs" /> },
+    { id: "metrics", content: <Card color="blue" title="Metrics" /> },
+    { id: "traces", content: <Card color="peach" title="Traces" /> },
+    { id: "events", content: <Card color="pink" title="Events" /> },
+    { id: "alerts", content: <Card color="yellow" title="Alerts" /> },
+    { id: "dashboards", content: <Card color="lavender" title="Dashboards" /> },
+  ]}
+/>
+```
+
+Props: `center` (required `ReactNode`), `centerAt` (required `{x, y}`, canvas-absolute), `spokes` (required `RadialMindMapSpoke[]`, length 3-8), `radius` (default 220), `startAngle` (default 270 — first leaf at 12 o'clock), `arrowColor`, `strokeWidth` (default 2), `progress`.
+
+Spokes do **not** carry `debugId` — they intentionally pass through the hub at its center; flagging would false-positive every frame. Place at canvas top level (NOT inside `<At>`); the primitive lays out its own children.
+
+### Venn
+
+2 or 3 overlapping circles with translucent fills so overlaps blend visually. Caller supplies circle and intersection-label positions; auto-layout is intentionally deferred since "which point is inside an intersection" is composition-specific.
+
+```tsx
+<Venn
+  width={460}
+  height={300}
+  circles={[
+    { id: "front", label: "Frontend", color: "mint", cx: 160, cy: 130, r: 100 },
+    { id: "back", label: "Backend", color: "blue", cx: 300, cy: 130, r: 100 },
+    { id: "ops", label: "DevOps", color: "peach", cx: 230, cy: 230, r: 100 },
+  ]}
+  intersectionLabels={[
+    { x: 230, y: 130, label: "Fullstack" },
+    { x: 230, y: 175, label: "Generalist" },
+  ]}
+/>
+```
+
+Props: `width` (required), `height` (required), `circles` (required `VennCircle[]`, length 2-3), `intersectionLabels` (default `[]`), `fillOpacity` (default 0.45), `labelSize` (default 16), `intersectionLabelSize` (default 14), `style`, `debugId?`.
+
+Labels use SVG `<text>` so they don't show up in the orphan walker and don't flag as obstacles for arrow checks.
+
+### DotRating
+
+N-of-M filled dots — compact rough-strength widget. Pairs cleanly with `ComparisonTable` cells when the comparison is rough rather than precise.
+
+```tsx
+<DotRating value={4} max={5} color="mint" label="Latency" labelPosition="left" />
+<DotRating value={3} max={10} color="blue" />
+```
+
+Props: `value` (required, clamped to `[0, max]`), `max` (required), `color` (default `mint`), `size` (default 12), `gap` (default 4), `label`, `labelPosition` (`left`|`right`, default `right`), `labelSize` (default 14), `style`, `debugId?`.
+
 ### Palette + theme
 
 ```ts
@@ -290,6 +549,26 @@ The bare `palette`, `ink`, `frame`, `annotation` exports still resolve to the li
 ### Fonts
 
 `fonts.sans` (Inter), `fonts.sansItalic`, `fonts.mono` (JetBrains Mono — use for addresses, hashes, log fragments).
+
+### Canvas presets
+
+Named dimension sets for the publishing surfaces this kit targets. Spread directly into `<Canvas>`:
+
+```tsx
+import { canvasPresets } from "@allen-saji/diagram-kit";
+
+<Canvas {...canvasPresets.bbgBlogInline} debug={debug}>
+  ...
+</Canvas>
+```
+
+| Preset | Dims (w x h) | Use |
+|---|---|---|
+| `bbgBlogInline` | 1456 x 819 | 16:9 hero asset for inline blog placement |
+| `bbgTallPoster` | 2484 x 3002 | Tall poster format for vertical comparison posts |
+| `bbgLandscapeArch` | 2472 x 1912 | Wide architecture diagrams (LB + JVM + storage stacks) |
+
+Twitter/X MP4 presets stay in `render-mp4.sh` since those are render-time concerns (bitrate/aspect), not canvas dimensions.
 
 ## Animation API
 
@@ -383,6 +662,15 @@ Public (`apps/playground/src/examples/fidelity/`):
 - `StepBadgeProbe.tsx` — `StepBadge` solid vs outline variants, `Title` bar accent.
 - `SwimLanesProbe.tsx` — `SwimLanes` 3-lane sequence with numbered `StepBadge` markers.
 - `PanelVariantsProbe.tsx` — `Panel` `variant="solid"` vs `variant="dashed"` side-by-side.
+- `SubPanelGridProbe.tsx` — 2x2 grid of independently-titled Panels (caching strategies).
+- `BeforeAfterSplitProbe.tsx` — stacked Panels with labeled divider chip (request batching).
+- `ComparisonTableProbe.tsx` — feature matrix with numbered StepBadge rows.
+- `FanArrowProbe.tsx` — leader -> three replicas, middle branch labeled.
+- `ChipsAndIconsProbe.tsx` — TagChip / IconBadge / StatusIcon trio in three rows.
+- `PersonaProbe.tsx` — LogoChip and AvatarChip variants (with image, fallback initial).
+- `ErDiagramProbe.tsx` — User -> Document -> Postgres -> Server rack with RelationshipNode pills.
+- `RadialMindMapProbe.tsx` — Hexagon hub + six leaves stepped 60 degrees apart.
+- `ShapesAndRatingsProbe.tsx` — flat + pointy Hexagons, three-set Venn, DotRating rows.
 
 Private (`private/projects/` — Allen-only):
 - `Px402Static.tsx` — sequence diagram with lifelines, 1600x1000.

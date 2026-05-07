@@ -1,6 +1,6 @@
 {
   "name": "@allen-saji/diagram-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React + Remotion primitives for ByteByteGo-style architecture diagrams. One source renders as static PNG or animated MP4, with a deterministic collision checker.",
   "keywords": [
     "remotion",

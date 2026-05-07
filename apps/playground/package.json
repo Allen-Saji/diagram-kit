@@ -1,6 +1,6 @@
 {
   "name": "diagram-kit-playground",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Remotion studio playground for diagram-kit — renders the public fidelity examples and (optionally) Allen's private compositions.",
   "type": "module",

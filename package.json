@@ -1,6 +1,6 @@
 {
   "name": "diagram-kit-monorepo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Workspace root for diagram-kit — a React + Remotion toolkit for ByteByteGo-style architecture diagrams.",
   "packageManager": "pnpm@10.30.3",
