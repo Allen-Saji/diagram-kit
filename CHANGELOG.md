@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Panel` accepts `variant="solid" | "dashed"`. `dashed` renders a
+  dashed border on a transparent background — for loose sub-region
+  grouping where the contained cards are the headline.
+- `PanelVariantsProbe` fidelity example showing solid vs dashed
+  side-by-side; included in `pnpm test:check`.
+
 ## [0.1.0] - 2026-05-07
 
 Initial public release.

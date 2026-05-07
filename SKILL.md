@@ -95,12 +95,18 @@ Props: `color` (PaletteColor, required), `title`, `subtitle`, `outline`, `radius
 Framed section with a pill-label title at the top border.
 
 ```tsx
-<Panel title="Write Path" debugId="write-panel" style={{ width: 700, height: 300 }}>
+<Panel title="Write Path" style={{ width: 700, height: 300 }}>
   {/* nested content, positioned absolutely inside */}
+</Panel>
+
+<Panel title="Background Region" variant="dashed" style={{ width: 700, height: 300 }}>
+  {/* dashed outline, transparent bg — for loose sub-region grouping */}
 </Panel>
 ```
 
-Props: `title`, `padding` (default 32), `radius` (default 20), `borderColor`, `debugId`, `style`.
+Props: `title`, `variant` (`"solid"` default — filled bg, solid border | `"dashed"` — transparent bg, dashed border for loose sub-region grouping), `padding` (default 32), `radius` (default 20), `borderColor`, `debugId`, `style`.
+
+Use `dashed` when the cards inside the panel are the headline and the panel is just a soft outline marking the region — BBG uses this on multi-region reference diagrams. Use `solid` everywhere else.
 
 ### TreeNode
 
@@ -376,6 +382,7 @@ Public (`apps/playground/src/examples/fidelity/`):
 - `DarkModeProbe.tsx` — `theme="dark"` reference: `StepBadge` + `CodeBlock` + `TerminalCard` on a single panel. Use as the canonical dark-mode template.
 - `StepBadgeProbe.tsx` — `StepBadge` solid vs outline variants, `Title` bar accent.
 - `SwimLanesProbe.tsx` — `SwimLanes` 3-lane sequence with numbered `StepBadge` markers.
+- `PanelVariantsProbe.tsx` — `Panel` `variant="solid"` vs `variant="dashed"` side-by-side.
 
 Private (`private/projects/` — Allen-only):
 - `Px402Static.tsx` — sequence diagram with lifelines, 1600x1000.

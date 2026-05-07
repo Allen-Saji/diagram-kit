@@ -7,6 +7,7 @@ import { LsmCompaction } from "./examples/fidelity/LsmCompaction";
 import { DarkModeProbe } from "./examples/fidelity/DarkModeProbe";
 import { StepBadgeProbe } from "./examples/fidelity/StepBadgeProbe";
 import { SwimLanesProbe } from "./examples/fidelity/SwimLanesProbe";
+import { PanelVariantsProbe } from "./examples/fidelity/PanelVariantsProbe";
 // Aliased to either ../../../private/index.tsx (when present) or
 // ./private-stub.ts (the empty default). Resolved by remotion.config.ts.
 import { privateRegistrations } from "@private/comps";
@@ -45,6 +46,12 @@ export const RemotionRoot: React.FC = () => {
           component={SwimLanesProbe}
           width={1600}
           height={900}
+        />
+        <Still
+          id="PanelVariantsProbe"
+          component={PanelVariantsProbe}
+          width={1600}
+          height={780}
         />
       </Folder>
       <Folder name="debug">
@@ -88,6 +95,13 @@ export const RemotionRoot: React.FC = () => {
           component={SwimLanesProbe}
           width={1600}
           height={900}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="PanelVariantsProbeDebug"
+          component={PanelVariantsProbe}
+          width={1600}
+          height={780}
           defaultProps={{ debug: true }}
         />
       </Folder>

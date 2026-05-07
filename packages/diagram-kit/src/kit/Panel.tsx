@@ -3,6 +3,8 @@ import { useFrame, useInk } from "./theme";
 import { fonts } from "./fonts";
 import { DebugOverlay } from "./Debug";
 
+type PanelVariant = "solid" | "dashed";
+
 type PanelProps = {
   title?: string;
   children?: React.ReactNode;
@@ -13,6 +15,13 @@ type PanelProps = {
   radius?: number;
   /** override border color; default near-black */
   borderColor?: string;
+  /**
+   * Frame style. `solid` (default) is the canonical BBG panel — filled
+   * background, solid border. `dashed` is for loose grouping: dashed
+   * border, transparent background so cards or other content sitting
+   * beneath show through.
+   */
+  variant?: PanelVariant;
   /** Identifier surfaced by the debug overlay and collision checker. */
   debugId?: string;
 };
@@ -24,11 +33,15 @@ export const Panel: React.FC<PanelProps> = ({
   padding = 32,
   radius = 20,
   borderColor,
+  variant = "solid",
   debugId,
 }) => {
   const frame = useFrame();
   const ink = useInk();
   const resolvedBorder = borderColor ?? frame.border;
+  const isDashed = variant === "dashed";
+  const frameBackground = isDashed ? "transparent" : frame.bg;
+  const frameBorder = `2px ${isDashed ? "dashed" : "solid"} ${resolvedBorder}`;
   // Auto-id for the pill title so its text gets tracked as an obstacle
   // for arrow intersection. Falls back to a slugified title when no
   // explicit debugId is given — the convention is Panels don't take
@@ -46,8 +59,8 @@ export const Panel: React.FC<PanelProps> = ({
     <div
       style={{
         position: "relative",
-        background: frame.bg,
-        border: `2px solid ${resolvedBorder}`,
+        background: frameBackground,
+        border: frameBorder,
         borderRadius: radius,
         padding,
         paddingTop: title ? padding + 16 : padding,
@@ -85,6 +98,9 @@ export const Panel: React.FC<PanelProps> = ({
               {title}
             </div>
           </DebugOverlay>
+          {/* Pill title sits centered on the panel's top border. The
+              pill always has a solid background so the dashed border
+              behind it stays visually behind, not bleeding through. */}
         </div>
       ) : null}
       {children}
