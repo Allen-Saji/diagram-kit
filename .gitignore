@@ -13,3 +13,6 @@ pnpm-debug.log*
 
 # Render outputs (kept local, not committed).
 out
+
+# Remotion bundle output from `pnpm build`.
+build/

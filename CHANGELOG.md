@@ -24,13 +24,15 @@ Initial public release.
   `Typewriter`) driven by `useCurrentFrame()`.
 - Render pipeline scripts: `iterate.sh` (fast preview), `render-png.sh`
   (multiple DPI presets including `4k` and `8k`), `render-mp4.sh`
-  (Twitter-spec presets), and `check.mjs` (deterministic collision
+  (Twitter-spec presets), `render-via-api.mjs` (Node-API workaround
+  for the CLI under pnpm), and `check.mjs` (deterministic collision
   checker with arrow / orphan-text intersection).
 - Six fidelity example compositions: `BTreeVsBPlus`, `LsmTrees`,
   `LsmCompaction`, `DarkModeProbe`, `StepBadgeProbe`, `SwimLanesProbe`.
 - Monorepo layout with `pnpm` workspaces — `packages/diagram-kit/`
   (publishable library) and `apps/playground/` (Remotion studio app).
-- MIT license, CONTRIBUTING guide, CI workflow, issue + PR templates.
+- MIT license, CONTRIBUTING guide, Code of Conduct, security policy,
+  CI workflow, issue + PR templates.
 
 [Unreleased]: https://github.com/Allen-Saji/diagram-kit/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/Allen-Saji/diagram-kit/releases/tag/v0.1.0
