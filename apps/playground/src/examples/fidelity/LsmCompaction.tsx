@@ -9,7 +9,7 @@ import {
   palette,
   ink,
   fonts,
-} from "../../kit";
+} from "@allen-saji/diagram-kit";
 
 export type LsmCompactionProps = {
   debug?: boolean;
@@ -23,7 +23,7 @@ export const LsmCompaction: React.FC<LsmCompactionProps> = ({
   debug = false,
 }) => {
   return (
-    <Canvas w={1600} h={820} debug={debug}>
+    <Canvas w={1600} h={820} debug={debug} theme="legacy">
       <At x={60} y={40}>
         <div style={{ width: 1480 }}>
           <Title accentColor="mint" rightSlot="LSM Compaction">

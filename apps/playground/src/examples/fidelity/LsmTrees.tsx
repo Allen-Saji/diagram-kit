@@ -10,7 +10,7 @@ import {
   palette,
   ink,
   fonts,
-} from "../../kit";
+} from "@allen-saji/diagram-kit";
 
 export type LsmTreesProps = {
   debug?: boolean;
@@ -25,7 +25,7 @@ export type LsmTreesProps = {
  */
 export const LsmTrees: React.FC<LsmTreesProps> = ({ debug = false }) => {
   return (
-    <Canvas w={1600} h={780} debug={debug}>
+    <Canvas w={1600} h={780} debug={debug} theme="legacy">
       <At x={60} y={40}>
         <div style={{ width: 1480 }}>
           <Title accentColor="yellow" rightSlot="LSM Trees">

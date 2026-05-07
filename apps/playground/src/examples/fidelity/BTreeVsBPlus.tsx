@@ -10,7 +10,7 @@ import {
   palette,
   ink,
   fonts,
-} from "../../kit";
+} from "@allen-saji/diagram-kit";
 
 export type BTreeVsBPlusProps = {
   /** Toggle the debug overlay (red bbox outlines + labels). */
@@ -25,7 +25,7 @@ export const BTreeVsBPlus: React.FC<BTreeVsBPlusProps> = ({
   debug = false,
 }) => {
   return (
-    <Canvas w={1600} h={900} debug={debug}>
+    <Canvas w={1600} h={900} debug={debug} theme="legacy">
       {/* Title bar */}
       <At x={60} y={40}>
         <div style={{ width: 1480 }}>
