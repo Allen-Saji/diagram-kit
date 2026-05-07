@@ -15,7 +15,13 @@ import { enableTailwind } from "@remotion/tailwind-v4";
 //     apps/playground/         <- this app
 //     packages/diagram-kit/    <- the published library
 //     private/                 <- optional Allen-only assets + comps
-const APP_ROOT = __dirname;
+//
+// Use process.cwd() rather than __dirname: Remotion's CLI evaluates this
+// config from inside its own dist directory under pnpm, which makes
+// __dirname point at @remotion/cli/dist instead of apps/playground.
+// Every entrypoint (`pnpm dev`, `pnpm build`, scripts/check.mjs,
+// scripts/render-via-api.mjs) sets cwd to apps/playground first.
+const APP_ROOT = process.cwd();
 const REPO_ROOT = path.resolve(APP_ROOT, "..", "..");
 const PRIVATE_DIR = path.join(REPO_ROOT, "private");
 const PRIVATE_INDEX = path.join(PRIVATE_DIR, "index.tsx");
