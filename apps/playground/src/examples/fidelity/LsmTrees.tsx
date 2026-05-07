@@ -4,7 +4,6 @@ import {
   At,
   Panel,
   FlowBox,
-  Card,
   Arrow,
   Title,
   palette,

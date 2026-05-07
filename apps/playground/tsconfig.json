@@ -9,7 +9,8 @@
       "@private/comps": [
         "../../private/index.tsx",
         "./src/private-stub.ts"
-      ]
+      ],
+      "@allen-saji/diagram-kit": ["../../packages/diagram-kit/src/index.ts"]
     }
   },
   "include": ["src", "remotion.config.ts", "../../private/**/*.tsx"]

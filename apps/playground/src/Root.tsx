@@ -1,6 +1,6 @@
 import "./index.css";
 import React from "react";
-import { Composition, Still, Folder } from "remotion";
+import { Still, Folder } from "remotion";
 import { BTreeVsBPlus } from "./examples/fidelity/BTreeVsBPlus";
 import { LsmTrees } from "./examples/fidelity/LsmTrees";
 import { LsmCompaction } from "./examples/fidelity/LsmCompaction";
