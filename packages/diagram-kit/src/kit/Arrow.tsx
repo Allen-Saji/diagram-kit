@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from "react";
-import { ink, frame } from "./palette";
+import { useFrame, useInk } from "./theme";
 import { fonts } from "./fonts";
 import { useCanvas } from "./Canvas";
 import { useDebug } from "./Debug";
@@ -50,16 +50,16 @@ export const Arrow: React.FC<ArrowProps> = ({
   from,
   to,
   waypoints = [],
-  color = ink.arrow,
+  color,
   strokeWidth = 2,
   headSize = 10,
   arrowEnd = true,
   arrowStart = false,
   label,
   labelT = 0.5,
-  labelBackground = frame.bg,
+  labelBackground,
   labelOffset = 0,
-  labelColor = ink.body,
+  labelColor,
   labelSize = 14,
   labelWeight = 500,
   dashed = false,
@@ -68,6 +68,11 @@ export const Arrow: React.FC<ArrowProps> = ({
 }) => {
   const canvas = useCanvas();
   const { emit } = useDebug();
+  const ink = useInk();
+  const frame = useFrame();
+  const resolvedColor = color ?? ink.arrow;
+  const resolvedLabelBg = labelBackground ?? frame.surface;
+  const resolvedLabelColor = labelColor ?? ink.body;
   const points = [from, ...waypoints, to];
 
   // Emit arrow geometry for scripts/check.mjs. Fires once on mount when
@@ -166,7 +171,7 @@ export const Arrow: React.FC<ArrowProps> = ({
           >
             <path
               d={`M 0 0 L ${headSize} ${headSize / 2} L 0 ${headSize} Z`}
-              fill={color}
+              fill={resolvedColor}
               opacity={reveal}
             />
           </marker>
@@ -181,7 +186,7 @@ export const Arrow: React.FC<ArrowProps> = ({
           >
             <path
               d={`M 0 0 L ${headSize} ${headSize / 2} L 0 ${headSize} Z`}
-              fill={color}
+              fill={resolvedColor}
               opacity={reveal}
             />
           </marker>
@@ -189,7 +194,7 @@ export const Arrow: React.FC<ArrowProps> = ({
         <path
           d={d}
           fill="none"
-          stroke={color}
+          stroke={resolvedColor}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -206,13 +211,13 @@ export const Arrow: React.FC<ArrowProps> = ({
             left: labelPos.x,
             top: labelPos.y,
             transform: "translate(-50%, -50%)",
-            background: labelBackground,
+            background: resolvedLabelBg,
             padding: "2px 8px",
             borderRadius: 6,
             fontFamily: fonts.sans,
             fontSize: labelSize,
             fontWeight: labelWeight,
-            color: labelColor,
+            color: resolvedLabelColor,
             whiteSpace: "nowrap",
             pointerEvents: "none",
             opacity: reveal,

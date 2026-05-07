@@ -1,5 +1,5 @@
 import React from "react";
-import { frame, ink } from "./palette";
+import { useFrame, useInk } from "./theme";
 import { fonts } from "./fonts";
 import { DebugOverlay } from "./Debug";
 
@@ -23,9 +23,12 @@ export const Panel: React.FC<PanelProps> = ({
   style,
   padding = 32,
   radius = 20,
-  borderColor = frame.border,
+  borderColor,
   debugId,
 }) => {
+  const frame = useFrame();
+  const ink = useInk();
+  const resolvedBorder = borderColor ?? frame.border;
   // Auto-id for the pill title so its text gets tracked as an obstacle
   // for arrow intersection. Falls back to a slugified title when no
   // explicit debugId is given — the convention is Panels don't take
@@ -44,7 +47,7 @@ export const Panel: React.FC<PanelProps> = ({
       style={{
         position: "relative",
         background: frame.bg,
-        border: `2px solid ${borderColor}`,
+        border: `2px solid ${resolvedBorder}`,
         borderRadius: radius,
         padding,
         paddingTop: title ? padding + 16 : padding,
@@ -69,7 +72,7 @@ export const Panel: React.FC<PanelProps> = ({
             <div
               style={{
                 background: frame.bg,
-                border: `2px solid ${borderColor}`,
+                border: `2px solid ${resolvedBorder}`,
                 borderRadius: 999,
                 padding: "4px 24px",
                 fontSize: 22,

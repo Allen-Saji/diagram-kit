@@ -1,12 +1,20 @@
 import React from "react";
-import { palette, PaletteColor, ink } from "./palette";
+import { PaletteColor } from "./palette";
+import { useSwatch, useInk } from "./theme";
 import { fonts } from "./fonts";
 import { DebugOverlay } from "./Debug";
 
+type AccentShape = "bar" | "square";
+
 type TitleProps = {
   children: React.ReactNode;
-  /** Small colored square accent next to the title (ByteByteGo style) */
+  /** Small colored accent next to the title (ByteByteGo style) */
   accentColor?: PaletteColor;
+  /**
+   * Accent geometry. `"bar"` (default, BBG canon) is a thin vertical bar,
+   * `"square"` is the original kit accent.
+   */
+  accentShape?: AccentShape;
   /** Right-side brand badge/logo slot */
   rightSlot?: React.ReactNode;
   size?: number;
@@ -17,18 +25,35 @@ type TitleProps = {
 export const Title: React.FC<TitleProps> = ({
   children,
   accentColor = "mint",
+  accentShape = "bar",
   rightSlot,
   size = 44,
   style,
   debugId,
 }) => {
-  const p = palette[accentColor];
-  // Auto-id so the title headline is tracked as an obstacle.
+  const p = useSwatch(accentColor);
+  const ink = useInk();
   const autoId =
     debugId ??
     (typeof children === "string"
       ? `title:${children.toLowerCase().replace(/\s+/g, "-").slice(0, 40)}`
       : "title:root");
+  const accent =
+    accentShape === "bar"
+      ? {
+          width: Math.max(5, Math.round(size * 0.12)),
+          height: Math.round(size * 0.95),
+          background: p.border,
+          border: "none" as const,
+          borderRadius: 2,
+        }
+      : {
+          width: size * 0.55,
+          height: size * 0.55,
+          background: p.bg,
+          border: `2px solid ${p.border}`,
+          borderRadius: 8,
+        };
   return (
     <DebugOverlay id={autoId} kind="title">
     <div
@@ -50,11 +75,7 @@ export const Title: React.FC<TitleProps> = ({
       >
         <div
           style={{
-            width: size * 0.55,
-            height: size * 0.55,
-            background: p.bg,
-            border: `2px solid ${p.border}`,
-            borderRadius: 8,
+            ...accent,
             flexShrink: 0,
           }}
         />

@@ -1,5 +1,5 @@
 import React from "react";
-import { annotation } from "./palette";
+import { useAnnotation } from "./theme";
 import { fonts } from "./fonts";
 import { DebugOverlay } from "./Debug";
 
@@ -21,6 +21,7 @@ export const Annotation: React.FC<AnnotationProps> = ({
   children,
   debugId,
 }) => {
+  const annotation = useAnnotation();
   return (
     <DebugOverlay id={debugId} kind="note">
       <div

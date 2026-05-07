@@ -4,9 +4,9 @@ import React, {
   useLayoutEffect,
   useRef,
 } from "react";
-import { frame } from "./palette";
 import { fonts } from "./fonts";
 import { DebugProvider, useDebug } from "./Debug";
+import { ThemeProvider, themeBundles, type Theme } from "./theme";
 
 type CanvasSize = { w: number; h: number };
 
@@ -18,6 +18,7 @@ type CanvasProps = {
   w: number;
   h: number;
   children: React.ReactNode;
+  /** Override page background. Defaults to the active theme's pageBg. */
   background?: string;
   style?: React.CSSProperties;
   /**
@@ -26,6 +27,14 @@ type CanvasProps = {
    * with the iterate.sh workflow.
    */
   debug?: boolean;
+  /**
+   * Visual theme. `"light"` (default) is the recalibrated BBG palette
+   * with a pale-mint page background. `"dark"` flips to the neon-on-dark
+   * variants used in BBG's Polling-vs-Webhooks / Load Balancer posters.
+   * `"legacy"` pins to the original kit hex values + white page bg —
+   * existing compositions opt in to preserve their published look.
+   */
+  theme?: Theme;
 };
 
 /**
@@ -36,17 +45,22 @@ export const Canvas: React.FC<CanvasProps> = ({
   w,
   h,
   children,
-  background = frame.pageBg,
+  background,
   style,
   debug = false,
+  theme = "light",
 }) => {
+  const bundle = themeBundles[theme];
+  const bg = background ?? bundle.frame.pageBg;
   return (
     <DebugProvider debug={debug}>
-      <CanvasContext.Provider value={{ w, h }}>
-        <CanvasRoot w={w} h={h} background={background} style={style}>
-          {children}
-        </CanvasRoot>
-      </CanvasContext.Provider>
+      <ThemeProvider value={bundle}>
+        <CanvasContext.Provider value={{ w, h }}>
+          <CanvasRoot w={w} h={h} background={bg} style={style}>
+            {children}
+          </CanvasRoot>
+        </CanvasContext.Provider>
+      </ThemeProvider>
     </DebugProvider>
   );
 };

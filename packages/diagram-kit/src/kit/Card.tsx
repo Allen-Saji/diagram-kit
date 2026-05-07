@@ -1,5 +1,6 @@
 import React from "react";
-import { palette, PaletteColor } from "./palette";
+import { PaletteColor } from "./palette";
+import { useSwatch } from "./theme";
 import { fonts } from "./fonts";
 import { DebugOverlay } from "./Debug";
 
@@ -37,7 +38,7 @@ export const Card: React.FC<CardProps> = ({
   style,
   debugId,
 }) => {
-  const p = palette[color];
+  const p = useSwatch(color);
   return (
     <DebugOverlay id={debugId} kind="card">
       <div

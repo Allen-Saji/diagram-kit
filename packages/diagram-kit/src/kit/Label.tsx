@@ -1,5 +1,5 @@
 import React from "react";
-import { ink } from "./palette";
+import { useInk } from "./theme";
 import { fonts } from "./fonts";
 import { DebugOverlay } from "./Debug";
 
@@ -35,13 +35,15 @@ export const Label: React.FC<LabelProps> = ({
   children,
   size = 15,
   weight = 700,
-  color = ink.heading,
+  color,
   tracking = 0.2,
   uppercase = false,
   align = "left",
   style,
   debugId,
 }) => {
+  const ink = useInk();
+  const resolvedColor = color ?? ink.heading;
   return (
     <DebugOverlay id={debugId} kind="label">
       <div
@@ -49,7 +51,7 @@ export const Label: React.FC<LabelProps> = ({
           fontFamily: fonts.sans,
           fontSize: size,
           fontWeight: weight,
-          color,
+          color: resolvedColor,
           letterSpacing: tracking,
           textTransform: uppercase ? "uppercase" : "none",
           textAlign: align,

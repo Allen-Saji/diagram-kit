@@ -1,4 +1,5 @@
 export * from "./palette";
+export * from "./theme";
 export * from "./fonts";
 export * from "./Canvas";
 export * from "./Debug";
@@ -10,3 +11,8 @@ export * from "./Arrow";
 export * from "./Annotation";
 export * from "./Title";
 export * from "./Label";
+export * from "./StepBadge";
+export * from "./CodeBlock";
+export * from "./TerminalCard";
+export * from "./SwimLanes";
+export * from "./StageRail";
