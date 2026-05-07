@@ -11,6 +11,8 @@ import { PanelVariantsProbe } from "./examples/fidelity/PanelVariantsProbe";
 import { SubPanelGridProbe } from "./examples/fidelity/SubPanelGridProbe";
 import { BeforeAfterSplitProbe } from "./examples/fidelity/BeforeAfterSplitProbe";
 import { ComparisonTableProbe } from "./examples/fidelity/ComparisonTableProbe";
+import { FanArrowProbe } from "./examples/fidelity/FanArrowProbe";
+import { ChipsAndIconsProbe } from "./examples/fidelity/ChipsAndIconsProbe";
 // Aliased to either ../../../private/index.tsx (when present) or
 // ./private-stub.ts (the empty default). Resolved by remotion.config.ts.
 import { privateRegistrations } from "@private/comps";
@@ -71,6 +73,18 @@ export const RemotionRoot: React.FC = () => {
         <Still
           id="ComparisonTableProbe"
           component={ComparisonTableProbe}
+          width={1600}
+          height={760}
+        />
+        <Still
+          id="FanArrowProbe"
+          component={FanArrowProbe}
+          width={1600}
+          height={780}
+        />
+        <Still
+          id="ChipsAndIconsProbe"
+          component={ChipsAndIconsProbe}
           width={1600}
           height={760}
         />
@@ -142,6 +156,20 @@ export const RemotionRoot: React.FC = () => {
         <Still
           id="ComparisonTableProbeDebug"
           component={ComparisonTableProbe}
+          width={1600}
+          height={760}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="FanArrowProbeDebug"
+          component={FanArrowProbe}
+          width={1600}
+          height={780}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="ChipsAndIconsProbeDebug"
+          component={ChipsAndIconsProbe}
           width={1600}
           height={760}
           defaultProps={{ debug: true }}

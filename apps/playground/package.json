@@ -8,7 +8,7 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "lint": "eslint src && tsc --noEmit",
-    "test:check": "for c in BTreeVsBPlus LsmTrees LsmCompaction DarkModeProbe StepBadgeProbe SwimLanesProbe PanelVariantsProbe SubPanelGridProbe BeforeAfterSplitProbe ComparisonTableProbe; do node ../../scripts/check.mjs \"$c\" || exit 1; done"
+    "test:check": "for c in BTreeVsBPlus LsmTrees LsmCompaction DarkModeProbe StepBadgeProbe SwimLanesProbe PanelVariantsProbe SubPanelGridProbe BeforeAfterSplitProbe ComparisonTableProbe FanArrowProbe ChipsAndIconsProbe; do node ../../scripts/check.mjs \"$c\" || exit 1; done"
   },
   "dependencies": {
     "@allen-saji/diagram-kit": "workspace:*",

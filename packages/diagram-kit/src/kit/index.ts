@@ -19,3 +19,7 @@ export * from "./StageRail";
 export * from "./SubPanelGrid";
 export * from "./BeforeAfterSplit";
 export * from "./ComparisonTable";
+export * from "./FanArrow";
+export * from "./TagChip";
+export * from "./IconBadge";
+export * from "./StatusIcon";
