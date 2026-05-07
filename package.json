@@ -14,6 +14,12 @@
     "test:check": "pnpm --filter diagram-kit-playground run test:check"
   },
   "devDependencies": {
-    "prettier": "3.8.1"
+    "@remotion/bundler": "4.0.451",
+    "@remotion/renderer": "4.0.451",
+    "@remotion/tailwind-v4": "4.0.451",
+    "prettier": "3.8.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.451"
   }
 }

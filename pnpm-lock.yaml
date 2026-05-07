@@ -8,9 +8,27 @@ importers:
 
   .:
     devDependencies:
+      '@remotion/bundler':
+        specifier: 4.0.451
+        version: 4.0.451(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@remotion/renderer':
+        specifier: 4.0.451
+        version: 4.0.451(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@remotion/tailwind-v4':
+        specifier: 4.0.451
+        version: 4.0.451(@remotion/bundler@4.0.451(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(webpack@5.105.0)
       prettier:
         specifier: 3.8.1
         version: 3.8.1
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+      remotion:
+        specifier: 4.0.451
+        version: 4.0.451(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
 
   apps/playground:
     dependencies:
