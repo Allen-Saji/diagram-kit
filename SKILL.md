@@ -23,40 +23,61 @@ Allen's personal toolkit for generating ByteByteGo-style technical diagrams. One
 
 ## Workflow
 
-1. **Gather context** on the subject. If it's a known project, read `~/Brain/Projects/<name>/` (design docs, architecture notes) and consult memory. Pick the diagram type: sequence / architecture block / tree / flow.
-2. **Draft composition** under `~/projects/diagram-kit/src/compositions/`. Use `projects/<Name>.tsx` for real-project diagrams (px402, Port Protocol, etc.) or `fidelity/<Name>.tsx` for BBG reference clones:
+The repo is a pnpm monorepo:
+
+```
+~/projects/diagram-kit/
+  packages/diagram-kit/   <- the library (@allen-saji/diagram-kit)
+  apps/playground/        <- Remotion studio app, consumes the lib via workspace:*
+  private/                <- Allen-only, gitignored: personal project diagrams + assets
+  scripts/                <- iterate, check, render-png, render-mp4, render-via-api
+```
+
+1. **Gather context** on the subject. If it's a known project, read `~/Brain/Projects/<name>/` (design docs, architecture notes) and consult memory. Pick the diagram type: sequence / architecture block / tree / flow. Pick a theme: `"light"` (default, BBG-canonical pale-mint bg) for blog/Twitter heroes; `"dark"` for protocol/CLI/security topics where neon-on-dark reads better; `"legacy"` only when reproducing or extending a previously-published diagram whose look must match.
+2. **Draft composition.** Two locations:
+   - `apps/playground/src/examples/<Name>.tsx` — public, ships in the repo. Use this for fidelity probes, BBG reference clones, and any diagram intended for the OSS playground.
+   - `private/projects/<Name>.tsx` — Allen-personal, gitignored. Use this for project-specific diagrams (px402, Port Protocol, ReceiptAI, Docket, AgentBazaar, etc.) where branding, audio, and Allen-owned imagery live.
+   Inside the comp:
    - Accept `debug?: boolean` and thread into `Canvas`.
    - Compose with `Canvas` + `At` + kit primitives.
    - Give every placed primitive a unique `debugId`.
-3. **Register** in `src/Root.tsx`: add `<Still>` (PNG) or `<Composition>` (MP4) in an appropriate folder. Also add a `<Still>` variant inside the `debug` folder with `defaultProps={{ debug: true }}`.
+3. **Register** in `apps/playground/src/Root.tsx` (public examples) or `private/index.tsx` (private comps): add `<Still>` (PNG) or `<Composition>` (MP4) in an appropriate `<Folder>`. Also add a `<Still>` variant inside the `debug` folder with `defaultProps={{ debug: true }}`.
 4. **Iterate with debug overlay:**
    ```bash
-   scripts/iterate.sh <Name> --debug    # out/iter/<Name>.debug.png (0.5x, red bbox labels)
+   bash scripts/iterate.sh <Name> --debug    # out/iter/<Name>.debug.png (0.5x, red bbox labels)
    ```
 5. **Verify no collisions:**
    ```bash
-   node scripts/check.mjs <Name>        # exits 1 on overlap; JSON report at out/iter/<Name>.report.json
+   node scripts/check.mjs <Name>             # exits 1 on overlap; JSON report at out/iter/<Name>.report.json
    ```
 6. **Render final:**
-   - PNG: `scripts/render-png.sh <Name> hd` (2x retina)
-   - MP4: `scripts/render-mp4.sh <Name> tweet-16x9`
+   - PNG: `bash scripts/render-png.sh <Name> hd` (2x retina; auto-routes to `out/<theme>/`)
+   - MP4: `bash scripts/render-mp4.sh <Name> tweet-16x9`
 
 Never skip step 5 on a new composition. Collisions are invisible until the checker flags them.
 
 ## Kit API reference
 
-All kit primitives are exported from `~/projects/diagram-kit/src/kit/`. Import from `../kit` inside a composition.
+All kit primitives ship from `packages/diagram-kit/`. Inside any composition (public or private), import from the library entry:
+
+```tsx
+import { Canvas, At, Card, Arrow, Title /* ... */ } from "@allen-saji/diagram-kit";
+```
+
+`workspace:*` links the playground (and any other workspace) to the live source, so changes to the kit are picked up without a rebuild during dev.
 
 ### Canvas + At (layout)
 
 ```tsx
-<Canvas w={1600} h={900} debug={debug}>
+<Canvas w={1600} h={900} debug={debug} theme="light">
   <At x={60} y={40}><Title>...</Title></At>
   <At x={800} y={500} anchor="center"><Card .../></At>
 </Canvas>
 ```
 
-- `Canvas` — fixed-size absolute-positioning container. `w`, `h`, optional `debug`, `background`.
+- `Canvas` — fixed-size absolute-positioning container. Props: `w`, `h`, `debug?`, `background?`, `theme?`.
+- `theme` — `"light"` (default, recalibrated BBG saturation + pale-mint page bg), `"dark"` (neon-on-dark, BBG's Polling-vs-Webhooks aesthetic), `"legacy"` (original kit hex values + white page bg). Choose `"legacy"` to preserve a previously-published diagram's exact look.
+- `background` — overrides the theme's page bg. Rare; usually leave it to the theme.
 - `At` — places a child at `(x, y)`. `anchor`: `top-left` (default) | `top-center` | `top-right` | `center` | `bottom-*`.
 
 ### Card
@@ -150,25 +171,115 @@ Props: `tone` (`red`|`gray`, default `red`), `size` (15), `weight` (500), `style
 
 ### Title
 
-Diagram headline with colored accent square + optional right brand slot.
+Diagram headline with colored accent + optional right brand slot.
 
 ```tsx
-<Title accentColor="blue" rightSlot="px402 · allensaji.dev">
+<Title accentColor="blue" accentShape="bar" rightSlot="px402 · allensaji.dev">
   Private Agent Payments on MagicBlock PER
 </Title>
 ```
 
-Props: `children` (required), `accentColor` (default `mint`), `rightSlot`, `size` (44), `style`.
+Props: `children` (required), `accentColor` (default `mint`), `accentShape` (`"bar"` default — BBG canon, vertical bar; `"square"` — original kit accent), `rightSlot`, `size` (44), `style`, `debugId?`.
 
-### Palette
+### StepBadge
 
-Import `palette`, `ink`, `frame`, `annotation` from `../kit`.
+Circled number (or short label) used as an inline step indicator on numbered flows. BBG uses these on nearly every multi-step diagram.
+
+```tsx
+<StepBadge n={1} color="mint" size={32} variant="solid" debugId="step-1" />
+<StepBadge n={2} color="blue" variant="outline" size={44} debugId="step-2" />
+```
+
+Props: `n` (required, number or string), `color` (PaletteColor, default `mint`), `size` (default 32), `variant` (`"solid"` filled | `"outline"` ring-only), `style`, `debugId?`.
+
+### CodeBlock
+
+Monospace snippet on a tinted pastel background — for SQL, shell, addresses, short code references inside a diagram. Use `TerminalCard` if you need full terminal chrome.
+
+```tsx
+<CodeBlock color="blue" lang="ts" width={720} debugId="code-poll">{`async function poll() {
+  const res = await fetch("/inbox");
+}`}</CodeBlock>
+```
+
+Props: `children` (string, required), `color` (PaletteColor, default `gray`), `lang?` (small uppercase tag in the corner), `size` (default 16), `width?`, `padding`, `radius`, `style`, `debugId?`.
+
+### TerminalCard
+
+Black terminal-window card with macOS-style traffic-light dots and a monospace body. Use for CLI output, shell sessions, log fragments.
+
+```tsx
+<TerminalCard title="poll.log" width={720} height={260} debugId="term-out">{`[12:00:00] GET /inbox -> 200
+[12:00:05] GET /inbox -> 200`}</TerminalCard>
+```
+
+Props: `children` (string, required), `title?`, `size` (default 15), `width?`, `height?`, `padding`, `radius`, `style`, `debugId?`.
+
+### SwimLanes
+
+Sequence-diagram swim lanes — header cards per actor + dashed vertical lifelines. Place `Card`s, `Arrow`s, and `StepBadge`s inside the same Canvas using `lanes[i].x` to align with each lane.
+
+```tsx
+const LANE = { sarah: 280, db: 800, alex: 1320 };
+<SwimLanes
+  lanes={[
+    { id: "sarah", title: "Sarah", subtitle: "writer A", color: "pink", x: LANE.sarah },
+    { id: "db",    title: "Database", subtitle: "row v=1", color: "blue", x: LANE.db },
+    { id: "alex",  title: "Alex",  subtitle: "writer B", color: "mint", x: LANE.alex },
+  ]}
+  headerY={150}
+  lifeline={{ top: 230, bottom: 800 }}
+/>
+```
+
+Props: `lanes` (required `SwimLane[]`), `headerY` (default 150), `lifeline` (required `{top, bottom}`), `lifelineColor?` (defaults to theme muted ink), `headerPadding`, `headerRadius`, `headerTitleSize`, `headerSubtitleSize`.
+
+`SwimLane = { id, title, subtitle?, color: PaletteColor, x }` — `x` is the lane center (canvas coords).
+
+Lifelines are rendered without `debugId` (they legitimately span the diagram height); on-lane cards must use solid fills, never `outline`, or the dashed line will show through.
+
+### StageRail
+
+Stage-rail layout — left column of icon+label tiles tied to right-side content bands. BBG uses this for the JVM, Load Balancer, and DoorDash architecture diagrams.
+
+```tsx
+<StageRail
+  origin={{ x: 60, y: 200 }}
+  width={1480}
+  rowHeight={140}
+  stages={[
+    { id: "build", label: "Build", icon: <span>⚙</span>, color: "mint",
+      content: <Card debugId="build-card" color="mint" title="javac" /> },
+    { id: "load",  label: "Load",  icon: <span>↧</span>, color: "blue",
+      content: <Card debugId="load-card" color="blue" title="ClassLoader" /> },
+  ]}
+/>
+```
+
+Props: `origin` (required `{x, y}` top-left), `width` (required total layout width), `rowHeight` (default 140), `railWidth` (default 140), `gap` (default 24), `stages` (required `Stage[]`), `tileBackground?`.
+
+`Stage = { id, label, icon, color?: PaletteColor, content }` — `content` is rendered in the right band with a top-left origin.
+
+### Palette + theme
 
 ```ts
 type PaletteColor = "mint" | "peach" | "blue" | "yellow" | "pink" | "purple" | "lavender" | "gray";
 ```
 
-Each `palette[color]` has `{ bg, border, text }`. `ink` has `heading`, `body`, `muted`, `arrow`. Source of truth: `src/kit/palette.ts`.
+Three palettes ship: `paletteLight` (default, recalibrated BBG saturation), `paletteDark` (neon-on-dark, mostly-hollow cards), `paletteLegacy` (original kit hex values). Each `palette[color]` is a `Swatch = { bg, border, text }`.
+
+The active palette is selected by the `theme` prop on `<Canvas>`. **Don't import `palette`/`ink`/`frame` directly from `../kit` for use inside a primitive** — read them from theme context instead so the same component works under any theme:
+
+```ts
+import { useSwatch, useInk, useFrame, useAnnotation } from "../kit";
+
+const p = useSwatch("blue");      // current theme's blue swatch
+const ink = useInk();              // { heading, body, muted, arrow }
+const frame = useFrame();          // { border, bg, pageBg }
+const annot = useAnnotation();     // { red, gray, redMuted }
+```
+
+The bare `palette`, `ink`, `frame`, `annotation` exports still resolve to the light variants for back-compat. Source of truth: `packages/diagram-kit/src/kit/palette.ts` + `packages/diagram-kit/src/kit/theme.ts`.
 
 ### Fonts
 
@@ -176,7 +287,7 @@ Each `palette[color]` has `{ bg, border, text }`. `ink` has `heading`, `body`, `
 
 ## Animation API
 
-From `../animation`. Every primitive reads `useCurrentFrame()`. Never use CSS `transition`, `animation`, or Tailwind `animate-*` classes — they do not render correctly in Remotion.
+Imported from the same `@allen-saji/diagram-kit` entry. Every primitive reads `useCurrentFrame()`. Never use CSS `transition`, `animation`, or Tailwind `animate-*` classes — they do not render correctly in Remotion.
 
 ```tsx
 <Appear at={0.5} duration={0.45} slideY={16}><Card ... /></Appear>
@@ -191,7 +302,7 @@ All times are in **seconds from composition start**. `at`, `duration` in seconds
 
 ## Registration pattern
 
-Open `src/Root.tsx` and add two entries: one in the feature folder, one in the `debug` folder.
+Open `apps/playground/src/Root.tsx` (public) or `private/index.tsx` (Allen-only) and add two entries: one in the feature folder, one in the `debug` folder.
 
 ```tsx
 <Folder name="<projectOrTopic>">
@@ -218,11 +329,25 @@ The debug registration is what lets `iterate.sh MyDiagram --debug` find `MyDiagr
 
 | Script | Usage | Output |
 |---|---|---|
-| `scripts/iterate.sh <Name> [--debug] [--full]` | Fast 0.5x preview | `out/iter/<Name>[.debug].png` |
+| `bash scripts/iterate.sh <Name> [--debug] [--full]` | Fast 0.5x preview | `out/iter/<Name>[.debug].png` |
 | `node scripts/check.mjs <Name> [--min-area=N]` | Headless collision check | JSON report + exit 1 on overlap |
-| `scripts/render-png.sh <Name> [blog\|hd\|ultra]` | Final PNG at 1x / 2x / 3x | `out/<Name>.png` |
-| `scripts/render-mp4.sh <Name> [tweet-16x9\|tweet-sq\|tweet-9x16\|blog]` | Final MP4, H.264/yuv420p | `out/<Name>.mp4` |
-| `npx remotion studio` | Live preview UI in browser | — |
+| `bash scripts/render-png.sh <Name> [blog\|hd\|4k\|ultra\|8k]` | Final PNG | `out/<theme>/<Name>-<preset>.png` |
+| `bash scripts/render-mp4.sh <Name> [tweet-16x9\|tweet-sq\|tweet-9x16\|blog]` | Final MP4, H.264/yuv420p | `out/<theme>/<Name>-<preset>.mp4` |
+| `node scripts/render-via-api.mjs <Name> <out-path> [scale]` | Node-API render fallback when CLI misbehaves | as specified |
+| `pnpm dev` | Live preview UI (Remotion studio) | http://localhost:3000 |
+| `pnpm test:check` | Run check.mjs against every public fidelity example | exit 1 on any overlap |
+
+PNG resolution by preset (canvas → output):
+
+| Preset | Multiplier | 1600×1100 canvas | 1920×1080 canvas | When to use |
+|---|---|---|---|---|
+| `blog` | 1× | 1600×1100 | 1920×1080 (FHD) | Inline blog asset, small embeds |
+| `hd` | 2× | 3200×2200 | 3840×2160 (UHD) | Default Twitter/X hero, retina display |
+| `4k` | auto | 3840×2640 | 3840×2160 | Guarantees ≥3840px wide regardless of canvas — use when posting to platforms that compress aggressively (Twitter, LinkedIn) |
+| `ultra` | 3× | 4800×3300 | 5760×3240 | Print, ultra-wide displays |
+| `8k` | auto | 7680×5280 | 7680×4320 | Archive / poster print |
+
+Output is auto-routed to `out/<theme>/` based on the `theme="..."` prop detected in the comp's source. Pass an explicit output path to override.
 
 MP4 presets:
 - `tweet-16x9` — 1920x1080 @ 8 Mbps (landscape, default)
@@ -242,15 +367,21 @@ MP4 presets:
 
 ## Reference compositions
 
-Study these for patterns before writing a new diagram:
+Study these for patterns before writing a new diagram. Public examples live under `apps/playground/src/examples/`; Allen-personal project comps live under `private/projects/`.
 
-- `src/compositions/projects/Px402Static.tsx` — sequence diagram with lifelines, 1600x1000.
-- `src/compositions/projects/Px402Animated.tsx` — 15s animated version of Px402Static. Shows `Appear` + `DrawArrow` + `Pulse` choreography, numbered badges on step arrows as Arrow labels.
-- `src/compositions/projects/PortProtocolArch.tsx` — 3-panel with rule pipeline, pass/fail branch, arrow labels as flow semantics.
-- `src/compositions/projects/DiagramKitArch.tsx` + `DiagramKitArchAnimated.tsx` — self-referential diagram about this kit.
-- `src/compositions/fidelity/BTreeVsBPlus.tsx` — two-panel comparison, uses `Panel` + `TreeNode` + `Arrow`.
-- `src/compositions/fidelity/LsmTrees.tsx` — multi-region block diagram with `FlowBox` chains.
-- `src/compositions/fidelity/LsmCompaction.tsx` — stacked tier visualization.
+Public (`apps/playground/src/examples/fidelity/`):
+- `BTreeVsBPlus.tsx` — two-panel comparison, uses `Panel` + `TreeNode` + `Arrow`.
+- `LsmTrees.tsx` — multi-region block diagram with `FlowBox` chains.
+- `LsmCompaction.tsx` — stacked tier visualization.
+- `DarkModeProbe.tsx` — `theme="dark"` reference: `StepBadge` + `CodeBlock` + `TerminalCard` on a single panel. Use as the canonical dark-mode template.
+- `StepBadgeProbe.tsx` — `StepBadge` solid vs outline variants, `Title` bar accent.
+- `SwimLanesProbe.tsx` — `SwimLanes` 3-lane sequence with numbered `StepBadge` markers.
+
+Private (`private/projects/` — Allen-only):
+- `Px402Static.tsx` — sequence diagram with lifelines, 1600x1000.
+- `Px402Animated.tsx` — 15s animated version. Shows `Appear` + `DrawArrow` + `Pulse` choreography, numbered badges on step arrows as Arrow labels.
+- `PortProtocolArch.tsx` — 3-panel with rule pipeline, pass/fail branch, arrow labels as flow semantics.
+- `DiagramKitArch.tsx` + `DiagramKitArchAnimated.tsx` — self-referential diagram about this kit.
 
 ## Pitfalls
 
@@ -264,8 +395,9 @@ Study these for patterns before writing a new diagram:
 - **Canvas dimensions must match the render preset.** Setting `<Canvas w=1600 h=1000>` and rendering via `render-mp4.sh <comp> tweet-16x9` (which targets 1920x1080) causes Remotion to letterbox or pad the mismatch, producing empty space in the final video. Match canvas dims to the intended preset from the start: `tweet-16x9` → 1920x1080, `tweet-sq` → 1080x1080, `tweet-9x16` → 1080x1920, `blog` PNG → any 16:10-ish ratio is fine. For static PNGs, any dims work since the composition is rendered at its native size. For MP4s, always pick canvas dims that match a preset.
 - **Animated compositions render at final frame for checks.** `check.mjs` automatically uses `composition.durationInFrames - 1` when durationInFrames > 1. This avoids spurious collisions from in-flight `Appear` / `ScaleIn` translates during the first few frames. For still compositions, it renders frame 0.
 - **Long text overflowing `FlowBox`.** `FlowBox` is fixed `width` × `height`. Use `Card` (inline-flex, sizes to content) when content is variable-length.
+- **`check.mjs` does NOT catch text-on-text overlap inside arrow labels.** Arrow labels (and any element marked `data-dk-skip`) are excluded from collision detection because labels legitimately float on arrow paths. If your arrow label is a multi-element group (label pill + sublabel below it, or label + inline badge), the checker won't notice when the elements overlap each other or sit on top of nearby cards. Always **visually verify** zoomed renders of any custom multi-line label group. Common breakage: making the main label pill taller (border, larger padding, pill radius) without re-spacing the sublabel that sits at `labelAt.y + 22` — the new pill engulfs the sublabel. Fix: top-anchor the sublabel (`transform: "translate(-50%, 0)"`) and bump the y offset to clear the pill's actual rendered height. Also confirm the whole label group sits in empty space — `labelAt.y` close to a card's top will push a top-anchored sublabel into the card.
 - **Unicode in labels.** Avoid em dashes and fancy quotes in titles — stick to ASCII for portability across font stacks.
 
 ## Maintenance
 
-This skill is a reference snapshot of the kit's surface area. When new primitives are added, new props land, or conventions change in `~/projects/diagram-kit/`, update this file. The kit's source of truth is the repo; this skill is the shortcut.
+This skill is a reference snapshot of the kit's surface area. When new primitives are added, new props land, or conventions change in `~/projects/diagram-kit/`, update this file **and** mirror it to `~/projects/diagram-kit/SKILL.md` so the OSS repo's skill stays in sync. The kit's source of truth is the repo; this skill is the shortcut.
