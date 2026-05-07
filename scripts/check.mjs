@@ -63,6 +63,13 @@ async function main() {
     .stat(privatePublicDir)
     .then(() => true)
     .catch(() => false);
+  const kitAliasTarget = path.join(
+    projectRoot,
+    "packages",
+    "diagram-kit",
+    "src",
+    "index.ts",
+  );
 
   const bundleOpts = {
     entryPoint: path.join(playgroundRoot, "src/index.ts"),
@@ -75,6 +82,7 @@ async function main() {
           alias: {
             ...((withTailwind.resolve ?? {}).alias ?? {}),
             "@private/comps": privateAliasTarget,
+            "@allen-saji/diagram-kit": kitAliasTarget,
           },
         },
       };

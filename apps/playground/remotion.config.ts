@@ -33,6 +33,18 @@ const PRIVATE_ALIAS_TARGET = fs.existsSync(PRIVATE_INDEX)
   ? PRIVATE_INDEX
   : path.join(APP_ROOT, "src", "private-stub.ts");
 
+// Resolve `@allen-saji/diagram-kit` to the kit's source so webpack picks
+// it up regardless of where the importing file lives. Without this,
+// imports from outside `apps/playground/` (e.g. `private/projects/`)
+// can't walk up to the linked workspace package.
+const KIT_ALIAS_TARGET = path.join(
+  REPO_ROOT,
+  "packages",
+  "diagram-kit",
+  "src",
+  "index.ts",
+);
+
 // Use Allen's private/public/ as Remotion's `staticFile` root when it
 // exists (so audio + image refs in private comps still resolve). When
 // the folder is absent, leave Remotion on its default and the app has
@@ -52,6 +64,7 @@ Config.overrideWebpackConfig((config) => {
       alias: {
         ...((withTailwind.resolve ?? {}).alias ?? {}),
         "@private/comps": PRIVATE_ALIAS_TARGET,
+        "@allen-saji/diagram-kit": KIT_ALIAS_TARGET,
       },
     },
   };
