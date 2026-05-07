@@ -1,0 +1,33 @@
+{
+  "name": "diagram-kit-playground",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remotion studio playground for diagram-kit — renders the public fidelity examples and (optionally) Allen's private compositions.",
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion bundle",
+    "lint": "eslint src && tsc --noEmit",
+    "test:check": "for c in BTreeVsBPlus LsmTrees LsmCompaction DarkModeProbe StepBadgeProbe SwimLanesProbe; do node ../../scripts/check.mjs \"$c\" || exit 1; done"
+  },
+  "dependencies": {
+    "@allen-saji/diagram-kit": "workspace:*",
+    "@remotion/bundler": "^4.0.451",
+    "@remotion/cli": "4.0.451",
+    "@remotion/google-fonts": "4.0.451",
+    "@remotion/renderer": "^4.0.451",
+    "@remotion/tailwind-v4": "4.0.451",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.451",
+    "tailwindcss": "4.0.0"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.451",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.19.0",
+    "get-mp3-duration": "^1.0.0",
+    "typescript": "5.9.3"
+  }
+}

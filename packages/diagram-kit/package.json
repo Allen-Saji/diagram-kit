@@ -1,0 +1,76 @@
+{
+  "name": "@allen-saji/diagram-kit",
+  "version": "0.1.0",
+  "description": "React + Remotion primitives for ByteByteGo-style architecture diagrams. One source renders as static PNG or animated MP4, with a deterministic collision checker.",
+  "keywords": [
+    "remotion",
+    "diagram",
+    "bytebytego",
+    "react",
+    "architecture-diagram",
+    "infographic",
+    "static-png",
+    "animated-mp4"
+  ],
+  "author": "Allen Saji <allensaji04@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Allen-Saji/diagram-kit.git",
+    "directory": "packages/diagram-kit"
+  },
+  "bugs": {
+    "url": "https://github.com/Allen-Saji/diagram-kit/issues"
+  },
+  "homepage": "https://github.com/Allen-Saji/diagram-kit#readme",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "lint": "tsc --noEmit -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20",
+    "remotion": ">=4 <5"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    },
+    "remotion": {
+      "optional": false
+    }
+  },
+  "dependencies": {
+    "@remotion/google-fonts": "4.0.451"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.451",
+    "tsup": "^8.3.5",
+    "typescript": "5.9.3"
+  }
+}

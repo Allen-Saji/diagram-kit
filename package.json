@@ -1,36 +1,19 @@
 {
-  "name": "diagram-kit",
-  "version": "1.0.0",
-  "description": "My Remotion video",
-  "repository": {},
-  "license": "UNLICENSED",
+  "name": "diagram-kit-monorepo",
+  "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@remotion/bundler": "^4.0.451",
-    "@remotion/cli": "4.0.451",
-    "@remotion/google-fonts": "4.0.451",
-    "@remotion/renderer": "^4.0.451",
-    "@remotion/tailwind-v4": "4.0.451",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "remotion": "4.0.451",
-    "tailwindcss": "4.0.0"
-  },
-  "devDependencies": {
-    "@remotion/eslint-config-flat": "4.0.451",
-    "@types/react": "19.2.7",
-    "@types/web": "0.0.166",
-    "eslint": "9.19.0",
-    "prettier": "3.8.1",
-    "typescript": "5.9.3"
+  "description": "Workspace root for diagram-kit — a React + Remotion toolkit for ByteByteGo-style architecture diagrams.",
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=18.18"
   },
   "scripts": {
-    "dev": "remotion studio",
-    "build": "remotion bundle",
-    "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "dev": "pnpm --filter diagram-kit-playground dev",
+    "build": "pnpm -r --filter @allen-saji/diagram-kit run build && pnpm --filter diagram-kit-playground run build",
+    "lint": "pnpm -r run lint",
+    "test:check": "pnpm --filter diagram-kit-playground run test:check"
   },
-  "sideEffects": [
-    "*.css"
-  ]
+  "devDependencies": {
+    "prettier": "3.8.1"
+  }
 }

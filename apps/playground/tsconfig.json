@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": false,
+    "paths": {
+      "@private/comps": [
+        "../../private/index.tsx",
+        "./src/private-stub.ts"
+      ]
+    }
+  },
+  "include": ["src", "remotion.config.ts", "../../private/**/*.tsx"]
+}
