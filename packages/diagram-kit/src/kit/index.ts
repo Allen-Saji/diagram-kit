@@ -32,3 +32,4 @@ export * from "./Hexagon";
 export * from "./RadialMindMap";
 export * from "./Venn";
 export * from "./DotRating";
+export * from "./canvasPresets";
