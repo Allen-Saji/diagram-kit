@@ -5,12 +5,16 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": false,
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
+    "baseUrl": ".",
     "paths": {
       "@private/comps": [
         "../../private/index.tsx",
         "./src/private-stub.ts"
       ],
-      "@allen-saji/diagram-kit": ["../../packages/diagram-kit/src/index.ts"]
+      "@allen-saji/diagram-kit": ["../../packages/diagram-kit/src/index.ts"],
+      "remotion": ["./node_modules/remotion"],
+      "remotion/*": ["./node_modules/remotion/*"]
     }
   },
   "include": ["src", "remotion.config.ts", "../../private/**/*.tsx"]
