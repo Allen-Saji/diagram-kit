@@ -13,6 +13,7 @@ import { BeforeAfterSplitProbe } from "./examples/fidelity/BeforeAfterSplitProbe
 import { ComparisonTableProbe } from "./examples/fidelity/ComparisonTableProbe";
 import { FanArrowProbe } from "./examples/fidelity/FanArrowProbe";
 import { ChipsAndIconsProbe } from "./examples/fidelity/ChipsAndIconsProbe";
+import { PersonaProbe } from "./examples/fidelity/PersonaProbe";
 // Aliased to either ../../../private/index.tsx (when present) or
 // ./private-stub.ts (the empty default). Resolved by remotion.config.ts.
 import { privateRegistrations } from "@private/comps";
@@ -87,6 +88,12 @@ export const RemotionRoot: React.FC = () => {
           component={ChipsAndIconsProbe}
           width={1600}
           height={760}
+        />
+        <Still
+          id="PersonaProbe"
+          component={PersonaProbe}
+          width={1600}
+          height={780}
         />
       </Folder>
       <Folder name="debug">
@@ -172,6 +179,13 @@ export const RemotionRoot: React.FC = () => {
           component={ChipsAndIconsProbe}
           width={1600}
           height={760}
+          defaultProps={{ debug: true }}
+        />
+        <Still
+          id="PersonaProbeDebug"
+          component={PersonaProbe}
+          width={1600}
+          height={780}
           defaultProps={{ debug: true }}
         />
       </Folder>

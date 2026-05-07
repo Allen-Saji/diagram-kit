@@ -23,3 +23,5 @@ export * from "./FanArrow";
 export * from "./TagChip";
 export * from "./IconBadge";
 export * from "./StatusIcon";
+export * from "./LogoChip";
+export * from "./AvatarChip";
