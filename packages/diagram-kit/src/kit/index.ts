@@ -25,3 +25,6 @@ export * from "./IconBadge";
 export * from "./StatusIcon";
 export * from "./LogoChip";
 export * from "./AvatarChip";
+export * from "./RelationshipNode";
+export * from "./Cylinder";
+export * from "./IconNode";
