@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-06
+
+Page-format expansion - the kit now produces full pages (listicle
+posters, product one-pagers, comparison pages, enterprise slides),
+not just diagrams, plus a house icon system and a hand-drawn theme.
+
+### Added
+
+- `Glyph` - lineal-color topic icon primitive with a 21-name registry
+  (user, agent, llm, embedding, vector-db, knowledge-graph, doc,
+  retrieval, filter, api, chat, report, server, lock, shield, coin,
+  gauge, clock, wallet, chain). Fixed ink outlines, palette-driven
+  fills, so one glyph recolors per semantic section. `GLYPH_NAMES`
+  exports the registry list.
+- `BrandIcon` - trademark logo tile taking the `simple-icons`
+  `{path, hex}` shape (the library itself stays dependency-free).
+  Chip tile and bare-mark modes.
+- Page primitives: `PillTitle` (numbered ink/accent pills),
+  `BulletList` (dot/dash/check markers), `FeatureCard` (pill title +
+  bullets + media slot), `PageHeader`/`PageFooter` (page bands),
+  `IconGrid` (captioned icon grid), `BandStack` (layer bands with a
+  label rail and leader lines), `MiniChart` (narrative line curves
+  with a dashed marker pill, and outlined bars).
+- Page templates in a new `templates/` module: `ListiclePoster`,
+  `ProductOnePager`, `ComparisonColumns`. Each owns its Canvas and
+  takes structured content.
+- Canvas presets: `poster` (1600x2000), `slide` (1920x1080),
+  `carousel` (1080x1350), `a4` (1240x1754; render `hd` for 300dpi).
+- `theme="sketch"` - graph-paper page background, hand-drawn font
+  (Patrick Hand), and wobbly asymmetric border radius on `Card`,
+  `Panel`, `FlowBox`, and `FeatureCard` via `sketchRadius()`.
+- Playground: `GlyphProbe`, `PagePrimitivesProbe`, `SketchThemeProbe`,
+  `BrandIconProbe` fidelity probes and four page-format examples
+  under `examples/pages/`.
+
+### Changed
+
+- `fonts.sans`/`fonts.sansItalic` now resolve through CSS variables
+  (`var(--dk-font-sans, Inter)`) so themes can swap families at the
+  Canvas root without touching primitives. `fontFamilies` exports the
+  raw family names. Rendered output is unchanged for existing themes.
+- `render-png.sh`/`render-mp4.sh` route `theme="sketch"` output to
+  `out/sketch/`.
+
 ## [0.2.0] - 2026-05-07
 
 BBG-fidelity primitive expansion — sixteen new primitives + canvas
@@ -112,6 +156,7 @@ Initial public release.
 - MIT license, CONTRIBUTING guide, Code of Conduct, security policy,
   CI workflow, issue + PR templates.
 
-[Unreleased]: https://github.com/Allen-Saji/diagram-kit/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Allen-Saji/diagram-kit/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Allen-Saji/diagram-kit/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Allen-Saji/diagram-kit/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Allen-Saji/diagram-kit/releases/tag/v0.1.0
