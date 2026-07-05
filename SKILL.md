@@ -18,8 +18,9 @@ Allen's personal toolkit for generating ByteByteGo-style technical diagrams. One
 - "make an animated MP4 of this"
 - "BBG-style diagram"
 - "turn this architecture note into a diagram"
+- "make a one-pager / poster / pamphlet / carousel / infographic for X"
 
-**Do not invoke for:** whiteboard sketches, mind maps, flowcharts with loose layout — use `excalidraw-diagram` for those.
+**Do not invoke for:** interactive/editable whiteboard files, mind maps, flowcharts with loose layout — use `excalidraw-diagram` for those. (A hand-drawn *look* in a rendered PNG is covered here by `theme="sketch"`.)
 
 ## Workflow
 
@@ -33,7 +34,7 @@ The repo is a pnpm monorepo:
   scripts/                <- iterate, check, render-png, render-mp4, render-via-api
 ```
 
-1. **Gather context** on the subject. If it's a known project, read `~/Brain/Projects/<name>/` (design docs, architecture notes) and consult memory. Pick the diagram type: sequence / architecture block / tree / flow. Pick a theme: `"light"` (default, BBG-canonical pale-mint bg) for blog/Twitter heroes; `"dark"` for protocol/CLI/security topics where neon-on-dark reads better; `"legacy"` only when reproducing or extending a previously-published diagram whose look must match.
+1. **Gather context** on the subject. If it's a known project, read `~/Brain/Projects/<name>/` (design docs, architecture notes) and consult memory. Pick the format: diagram (sequence / architecture block / tree / flow) or page (listicle poster / product one-pager / comparison columns / band-stack slide — see the page templates below). Pick a theme: `"light"` (default, BBG-canonical pale-mint bg) for blog/Twitter heroes; `"dark"` for protocol/CLI/security topics where neon-on-dark reads better; `"sketch"` for hand-drawn explainers (graph paper, hand font, wobbly borders); `"legacy"` only when reproducing or extending a previously-published diagram whose look must match.
 2. **Draft composition.** Two locations:
    - `apps/playground/src/examples/<Name>.tsx` — public, ships in the repo. Use this for fidelity probes, BBG reference clones, and any diagram intended for the OSS playground.
    - `private/projects/<Name>.tsx` — Allen-personal, gitignored. Use this for project-specific diagrams (px402, Port Protocol, ReceiptAI, Docket, AgentBazaar, etc.) where branding, audio, and Allen-owned imagery live.
@@ -525,13 +526,194 @@ N-of-M filled dots — compact rough-strength widget. Pairs cleanly with `Compar
 
 Props: `value` (required, clamped to `[0, max]`), `max` (required), `color` (default `mint`), `size` (default 12), `gap` (default 4), `label`, `labelPosition` (`left`|`right`, default `right`), `labelSize` (default 14), `style`, `debugId?`.
 
+### Glyph
+
+Lineal-color topic icon — the BBG-style icon illustrations. Fixed 80x80 viewBox artwork in a locked house style (near-black ink outlines, accent + light fills from the active swatch), so the same glyph recolors per semantic section.
+
+```tsx
+<Glyph name="llm" color="mint" size={72} label="LLM" />
+<Glyph name="vector-db" color="blue" size={28} />   {/* inline next to a label */}
+```
+
+Props: `name` (required `GlyphName`), `color` (default `gray`), `size` (default 64), `label`, `labelSize` (default 14), `style`, `debugId?`.
+
+Registry (`GLYPH_NAMES` exports the list): `user`, `user-query`, `agent`, `llm`, `embedding`, `vector-db`, `knowledge-graph`, `doc`, `retrieval`, `filter`, `api`, `chat`, `report`, `server`, `lock`, `shield`, `coin`, `gauge`, `clock`, `wallet`, `chain`.
+
+**Glyph policy.** Three asset classes, never mixed: house glyphs for *concepts* (this registry), `BrandIcon` for *companies* (real trademark SVGs), `StatusIcon`/`StepBadge` for micro-marks. Nouns and actors get glyphs; verbs and flows stay arrows with labels. One glyph per card: hero size (56-96) inside step/feature cards, small (20-32) inline, none in dense text panels. When a composition needs a missing noun, draw it in `Glyph.tsx` following the style spec in the file header (4px ink outlines, 3px inner details, 2.5px fine lines at 0.45 opacity, rounded joins) and it joins the registry.
+
+### BrandIcon
+
+Real trademark logo tile. The kit takes the `{path, hex, title}` shape — install `simple-icons` in the consuming app and pass its exports straight through. Never hand-draw a trademark.
+
+```tsx
+import { siGithub } from "simple-icons";
+<BrandIcon icon={siGithub} label="GitHub" size={34} />          // white chip tile, brand color
+<BrandIcon icon={siGithub} chip={false} color="#242A35" />      // bare mark, single ink
+```
+
+Props: `icon` (required `BrandIconData = {path, hex?, title?}`), `size` (default 28), `chip` (default true), `color` (default brand hex, else ink), `label`, `labelSize` (default 13), `style`, `debugId?`.
+
+### PillTitle
+
+Solid rounded pill headline — BBG's numbered listicle-panel titles and layer titles. Place standalone, or straddle a `Panel`'s top border with `At` + `anchor="center"` (Panels carry no debugId, so the overlap doesn't trip the checker).
+
+```tsx
+<PillTitle number={1}>Splitting Early</PillTitle>          {/* black pill */}
+<PillTitle tone="mint">Context Engineering</PillTitle>     {/* accent pill */}
+```
+
+Props: `children` (required), `number`, `tone` (`"ink"` (default) | `PaletteColor`), `size` (default 22), `style`, `debugId?`.
+
+### BulletList
+
+Feature-card bullet copy — short lines with a small colored marker.
+
+```tsx
+<BulletList color="mint" items={["Skills as reusable workflows", "Built in vs external skills"]} />
+<BulletList color="peach" marker="check" items={["Live on devnet", "203 tests green"]} />
+```
+
+Props: `items` (required `ReactNode[]`), `color` (default `mint`), `marker` (`dot` (default) | `dash` | `check`), `size` (default 16), `gap` (default 10), `width`, `style`, `debugId?`.
+
+### FeatureCard
+
+Product one-pager card: pill title + bullets + optional media thumbnail on a white surface with a soft border. Six of these in a grid + `PageHeader`/`PageFooter` is a complete promo page.
+
+```tsx
+<FeatureCard
+  title="MCP & Agentic Tooling"
+  color="mint"
+  width={680}
+  bullets={["MCP server and client architecture", "Tool calling reliability"]}
+  media={<div style={{ width: "100%", height: 190, background: "#DFF1E7", borderRadius: 12 }}>...</div>}
+/>
+```
+
+Props: `title` (required), `number`, `color` (default `mint`), `pillTone` (defaults to `color`; pass `"ink"` for black pills), `bullets`, `children`, `media` (any node — a Glyph tile, an image, a scaled-down composition), `mediaPosition` (`right` (default) | `bottom`), `mediaWidth` (default 45% of width), `width` (required), `height`, `padding` (default 22), `bulletSize` (default 16), `style`, `debugId?`.
+
+### PageHeader / PageFooter
+
+Page-format headline and closing bands. Use `Title` for diagram headlines with the accent bar; use these for pamphlet / one-pager / poster pages.
+
+```tsx
+<PageHeader
+  width={1500}
+  title={<>Build With <span style={{ color: "#C8431F" }}>Claude Code</span></>}
+  subtitle="2-Day Intensive · Cohort-Based Course"
+/>
+<PageFooter width={1500} left={<>◆ diagram-kit</>} right={<>github.com/Allen-Saji/diagram-kit</>} />
+```
+
+PageHeader props: `title` (required), `subtitle`, `align` (`center` (default) | `left`), `width` (required), `titleSize` (default 52), `subtitleSize` (default 21), `style`, `debugId?`.
+PageFooter props: `left`, `right`, `width` (required), `size` (default 19), `divider` (default true), `style`, `debugId?`.
+
+### IconGrid
+
+Captioned icon grid — the "Customer 360" treatment: many small icons, tiny captions, tight grid. String items resolve through the Glyph registry; pass nodes for brand logos.
+
+```tsx
+<IconGrid
+  cols={8}
+  color="blue"
+  items={[
+    { icon: "report", caption: "Sales" },
+    { icon: "chat", caption: "Service" },
+    { icon: <BrandIcon icon={siGithub} chip={false} size={32} />, caption: "GitHub" },
+  ]}
+/>
+```
+
+Props: `items` (required `{icon: GlyphName | ReactNode, caption}[]`), `cols` (required), `cellWidth` (default 104), `color` (default `gray`), `iconSize` (default 40), `captionSize` (default 13), `gapX` (default 8), `gapY` (default 18), `style`, `debugId?`.
+
+**Container debugId rule:** when an `IconGrid` (or any tracked primitive) sits *inside* a `BandStack`/`FeatureCard` that already has a debugId, give only one of them the id — parent + child both tracked reads as a collision.
+
+### BandStack
+
+Horizontal layer bands with an optional left label rail + leader lines — the enterprise architecture slide layout ("System of engagement / agency / work / context"). Single-hue palettes (all bands one color) give the corporate register; mixed palettes read BBG.
+
+```tsx
+<BandStack
+  width={1760}
+  railWidth={300}
+  bands={[
+    { rail: "System of engagement", color: "blue", height: 130, title: "Chat Surface", content: <>...</> },
+    { rail: "Trust layer", height: 110, content: <>...</> },   // no color = white surface
+  ]}
+/>
+```
+
+Props: `bands` (required `Band[] = {rail?, title?, content?, color?, height?}`), `width` (required), `railWidth` (default 220; 0 hides the rail), `gap` (default 18), `bandPadding` (default 18), `railSize` (default 19), `style`, `debugId?`.
+
+### MiniChart
+
+Small annotated narrative chart — the "cost to change vs what we know" curve panels. Deliberately minimal: no ticks or gridlines, two end labels, smooth ease curves, optional dashed marker. Not a data-viz tool.
+
+```tsx
+<MiniChart
+  variant="line" w={420} h={280}
+  series={[
+    { label: "cost to change", color: "pink", points: [1, 1.6, 5.4, 7.8] },
+    { label: "what we know", color: "mint", points: [0.6, 1.1, 4.2, 6.2] },
+  ]}
+  xLabels={["Early", "Mature"]}
+  marker={{ at: 0.2, label: "split here", color: "mint" }}
+/>
+<MiniChart variant="bar" w={220} h={280} bars={[{ label: "p50", value: 12, color: "mint" }]} />
+```
+
+Props: `variant` (`line` (default) | `bar`), `w`/`h` (required), `series` (`{label?, color, points: number[]}[]`; values auto-normalize to the global max), `bars` (`{label?, value, color?}[]`), `xLabels` (`[start, end]`), `marker` (`{at: 0..1, label, color?}` — dashed vline + pill + dots where it crosses each series), `showValues` (bar variant, default true), `legend` (default on when >1 labeled series), `style`, `debugId?`.
+
+Keep line series to 3-5 points — each point adds an ease step, and too many reads as wobble instead of a sweep.
+
+### Page templates
+
+Full-page compositions that own their `Canvas`. Import from the same entry.
+
+**ListiclePoster** — "Top N Anti-Patterns" pages: title row + dashed panel grid, numbered pills straddling each panel's top border.
+
+```tsx
+<ListiclePoster
+  w={1600} h={1560} title="Top Anti-Patterns in Service Architecture" rightSlot="brand"
+  cols={2}
+  panels={[
+    { title: "Splitting Early", content: (box) => <>{/* At coords are panel-local */}</> },
+  ]}
+/>
+```
+
+Props: `title`, `accentColor` (default `mint`), `rightSlot`, `panels` (`{title, number? (auto), tone?, content: ReactNode | (box) => ReactNode}[]`), `cols` (default 2), `w`/`h`, `theme`, `debug`, `margin` (default 48), `gap` (default 56).
+
+**ProductOnePager** — promo page: centered `PageHeader`, FeatureCard grid, `PageFooter`.
+
+```tsx
+<ProductOnePager
+  w={1600} h={1400}
+  header={{ title: <>Ship Diagrams <span style={{ color: "#C8431F" }}>as Code</span></>, subtitle: "..." }}
+  features={[{ title: "Glyph Registry", color: "mint", bullets: [...], media: <>...</> }]}
+  footer={{ left: <>◆ diagram-kit</>, right: <>github.com/...</> }}
+/>
+```
+
+Props: `header` (required), `features` (required `OnePagerFeature[]` — FeatureCard props minus width/height), `cols` (default 2), `footer`, `accentColor` (default `mint`), `w`/`h`, `theme`, `debug`, `margin` (default 50), `gap` (default 28).
+
+**ComparisonColumns** — "RAG vs Agentic RAG vs Graph RAG" pages: accent pill per column, pale wash of the same accent behind each column's content. Tint each column's glyphs to the column color.
+
+```tsx
+<ComparisonColumns
+  w={1600} h={1150}
+  columns={[{ title: "RAG", color: "blue", content: (box) => <>...</> }]}
+/>
+```
+
+Props: `columns` (required `{title, color, content}[]`), `w`/`h`, `theme`, `debug`, `margin` (default 40), `gap` (default 36), `washOpacity` (default 0.42).
+
 ### Palette + theme
 
 ```ts
 type PaletteColor = "mint" | "peach" | "blue" | "yellow" | "pink" | "purple" | "lavender" | "gray";
 ```
 
-Three palettes ship: `paletteLight` (default, recalibrated BBG saturation), `paletteDark` (neon-on-dark, mostly-hollow cards), `paletteLegacy` (original kit hex values). Each `palette[color]` is a `Swatch = { bg, border, text }`.
+Four themes ship: `light` (default, recalibrated BBG saturation), `dark` (neon-on-dark, mostly-hollow cards), `legacy` (original kit hex values), and `sketch` (light palette on a graph-paper page, hand-drawn font swapped in via CSS variables, wobbly asymmetric border radius on `Card`/`Panel`/`FlowBox`/`FeatureCard` — see `sketchRadius()` in theme.ts). Each `palette[color]` is a `Swatch = { bg, border, text }`.
 
 The active palette is selected by the `theme` prop on `<Canvas>`. **Don't import `palette`/`ink`/`frame` directly from `../kit` for use inside a primitive** — read them from theme context instead so the same component works under any theme:
 
@@ -548,7 +730,9 @@ The bare `palette`, `ink`, `frame`, `annotation` exports still resolve to the li
 
 ### Fonts
 
-`fonts.sans` (Inter), `fonts.sansItalic`, `fonts.mono` (JetBrains Mono — use for addresses, hashes, log fragments).
+`fonts.sans` (Inter), `fonts.sansItalic`, `fonts.mono` (JetBrains Mono — use for addresses, hashes, log fragments), `fonts.hand` (Patrick Hand — the sketch-theme face).
+
+`fonts.sans`/`fonts.sansItalic` resolve through CSS variables (`var(--dk-font-sans, Inter)`), which is how `theme="sketch"` swaps every primitive to the hand font by setting the variable at the Canvas root — no primitive opts in individually. `fontFamilies` exports the raw loaded family names without the indirection.
 
 ### Canvas presets
 
@@ -567,6 +751,10 @@ import { canvasPresets } from "@allen-saji/diagram-kit";
 | `bbgBlogInline` | 1456 x 819 | 16:9 hero asset for inline blog placement |
 | `bbgTallPoster` | 2484 x 3002 | Tall poster format for vertical comparison posts |
 | `bbgLandscapeArch` | 2472 x 1912 | Wide architecture diagrams (LB + JVM + storage stacks) |
+| `poster` | 1600 x 2000 | Listicle / layered-arch poster pages |
+| `slide` | 1920 x 1080 | 16:9 presentation slide / video-frame page |
+| `carousel` | 1080 x 1350 | LinkedIn / X carousel card (4:5 portrait) |
+| `a4` | 1240 x 1754 | A4 at 150dpi — render `hd` (2x) for print-ready 300dpi |
 
 Twitter/X MP4 presets stay in `render-mp4.sh` since those are render-time concerns (bitrate/aspect), not canvas dimensions.
 
@@ -647,6 +835,8 @@ MP4 presets:
 - **Annotation tones.** Red italic for walkthrough steps, gray italic for ambient notes.
 - **`debugId` on every placed primitive — except `Panel`.** `Panel` is a semantic container; cards intentionally sit inside it. Giving a `Panel` a `debugId` makes the collision checker flag every contained card as an overlap. Leave `Panel` unidentified; put `debugId` on the actual content.
 - **Pick one palette family per semantic role.** e.g. if `blue` = server, don't also use `blue` for a data store elsewhere in the same diagram.
+- **Glyph policy.** Concepts get `Glyph` (house lineal-color registry), companies get `BrandIcon` (never hand-draw a trademark), micro-marks get `StatusIcon`/`StepBadge`. Nouns/actors get glyphs; verbs/flows stay arrows. One glyph per card — hero size (56-96) in step/feature cards, small (20-32) inline. Missing a noun? Draw it into `Glyph.tsx` per the style spec in its header.
+- **One tracked container per region.** `IconGrid` inside a `BandStack` (or similar nesting): give the debugId to one of them, not both — parent + child both tracked reads as a collision, same reason `Panel` takes no debugId.
 - **No CSS transitions.** All motion via `useCurrentFrame()` — enforced by Remotion's rendering model, not an aesthetic choice.
 - **Mono font for technical strings.** Addresses, tx hashes, CLI output, endpoints.
 
