@@ -1,5 +1,5 @@
 import React from "react";
-import { useFrame, useInk } from "./theme";
+import { useFrame, useInk, useTheme, sketchRadius } from "./theme";
 import { fonts } from "./fonts";
 import { DebugOverlay } from "./Debug";
 
@@ -38,6 +38,7 @@ export const Panel: React.FC<PanelProps> = ({
 }) => {
   const frame = useFrame();
   const ink = useInk();
+  const { theme } = useTheme();
   const resolvedBorder = borderColor ?? frame.border;
   const isDashed = variant === "dashed";
   const frameBackground = isDashed ? "transparent" : frame.bg;
@@ -61,7 +62,7 @@ export const Panel: React.FC<PanelProps> = ({
         position: "relative",
         background: frameBackground,
         border: frameBorder,
-        borderRadius: radius,
+        borderRadius: sketchRadius(theme) ?? radius,
         padding,
         paddingTop: title ? padding + 16 : padding,
         fontFamily: fonts.sans,

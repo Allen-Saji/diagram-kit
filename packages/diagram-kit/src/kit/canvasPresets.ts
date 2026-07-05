@@ -29,6 +29,14 @@ export const canvasPresets = {
   bbgBlogInline: { w: 1456, h: 819 },
   bbgTallPoster: { w: 2484, h: 3002 },
   bbgLandscapeArch: { w: 2472, h: 1912 },
+  /** Listicle / layered-arch poster — tall page, panels stacked in a grid. */
+  poster: { w: 1600, h: 2000 },
+  /** 16:9 presentation slide / video-frame page. */
+  slide: { w: 1920, h: 1080 },
+  /** LinkedIn / X carousel card (4:5 portrait). */
+  carousel: { w: 1080, h: 1350 },
+  /** A4 portrait at 150dpi — render with `hd` (2x) for print-ready 300dpi. */
+  a4: { w: 1240, h: 1754 },
 } as const;
 
 export type CanvasPresetName = keyof typeof canvasPresets;

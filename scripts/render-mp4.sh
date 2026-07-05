@@ -40,7 +40,7 @@ if [ -z "$OUT" ]; then
   COMP_FILE=$(find "$APP_DIR/src/examples" "$REPO_ROOT/private/projects" -name "${COMP}.tsx" -type f 2>/dev/null | head -1)
   THEME="light"
   if [ -n "$COMP_FILE" ]; then
-    DETECTED=$(grep -oE 'theme="(legacy|light|dark)"' "$COMP_FILE" | head -1 | sed -E 's/theme="(.*)"/\1/' || true)
+    DETECTED=$(grep -oE 'theme="(legacy|light|dark|sketch)"' "$COMP_FILE" | head -1 | sed -E 's/theme="(.*)"/\1/' || true)
     if [ -n "$DETECTED" ]; then
       THEME="$DETECTED"
     fi

@@ -87,6 +87,17 @@ export const frameDark: Frame = {
   pageBg: "#0E1428",
 };
 
+/**
+ * Sketch frame — soft near-black lines on a cool paper gray. The
+ * graph-paper grid itself is drawn by `Canvas` when `theme="sketch"`.
+ */
+export const frameSketch: Frame = {
+  border: "#2B3037",
+  bg: "#FFFFFF",
+  surface: "#FFFFFF",
+  pageBg: "#F2F3F5",
+};
+
 /** Default frame alias — light. Existing imports of `frame` keep working. */
 export const frame = frameLight;
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { PaletteColor } from "./palette";
-import { useSwatch } from "./theme";
+import { useSwatch, useTheme, sketchRadius } from "./theme";
 import { fonts } from "./fonts";
 import { DebugOverlay } from "./Debug";
 
@@ -39,13 +39,14 @@ export const Card: React.FC<CardProps> = ({
   debugId,
 }) => {
   const p = useSwatch(color);
+  const { theme } = useTheme();
   return (
     <DebugOverlay id={debugId} kind="card">
       <div
         style={{
           background: outline ? "transparent" : p.bg,
           border: `2px solid ${p.border}`,
-          borderRadius: radius,
+          borderRadius: sketchRadius(theme) ?? radius,
           padding,
           color: p.text,
           fontFamily: fonts.sans,

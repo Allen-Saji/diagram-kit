@@ -4,9 +4,12 @@ import React, {
   useLayoutEffect,
   useRef,
 } from "react";
-import { fonts } from "./fonts";
+import { fonts, fontFamilies } from "./fonts";
 import { DebugProvider, useDebug } from "./Debug";
 import { ThemeProvider, themeBundles, type Theme } from "./theme";
+
+/** Graph-paper grid line color for the sketch theme. */
+const SKETCH_GRID = "#D3D9E2";
 
 type CanvasSize = { w: number; h: number };
 
@@ -52,11 +55,22 @@ export const Canvas: React.FC<CanvasProps> = ({
 }) => {
   const bundle = themeBundles[theme];
   const bg = background ?? bundle.frame.pageBg;
+  // Sketch theme: swap every primitive's font via the --dk-font-* CSS
+  // variables (see fonts.ts) and draw a graph-paper grid behind the page.
+  const sketchStyle: React.CSSProperties =
+    theme === "sketch"
+      ? ({
+          "--dk-font-sans": fontFamilies.hand,
+          "--dk-font-sans-italic": fontFamilies.hand,
+          backgroundImage: `linear-gradient(${SKETCH_GRID} 1px, transparent 1px), linear-gradient(90deg, ${SKETCH_GRID} 1px, transparent 1px)`,
+          backgroundSize: "26px 26px",
+        } as React.CSSProperties)
+      : {};
   return (
     <DebugProvider debug={debug}>
       <ThemeProvider value={bundle}>
         <CanvasContext.Provider value={{ w, h }}>
-          <CanvasRoot w={w} h={h} background={bg} style={style}>
+          <CanvasRoot w={w} h={h} background={bg} style={{ ...sketchStyle, ...style }}>
             {children}
           </CanvasRoot>
         </CanvasContext.Provider>

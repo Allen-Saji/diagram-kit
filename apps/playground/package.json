@@ -28,6 +28,7 @@
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
     "get-mp3-duration": "^1.0.0",
+    "simple-icons": "^16.25.0",
     "typescript": "5.9.3"
   }
 }

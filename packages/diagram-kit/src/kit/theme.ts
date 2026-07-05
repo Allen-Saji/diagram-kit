@@ -6,6 +6,7 @@ import {
   frameLight,
   frameDark,
   frameLegacy,
+  frameSketch,
   inkLight,
   inkDark,
   annotationLight,
@@ -17,7 +18,7 @@ import {
   type AnnotationPalette,
 } from "./palette";
 
-export type Theme = "light" | "dark" | "legacy";
+export type Theme = "light" | "dark" | "legacy" | "sketch";
 
 export type ThemeBundle = {
   theme: Theme;
@@ -51,11 +52,29 @@ const legacyBundle: ThemeBundle = {
   annotation: annotationLight,
 };
 
+const sketchBundle: ThemeBundle = {
+  theme: "sketch",
+  palette: paletteLight,
+  frame: frameSketch,
+  ink: inkLight,
+  annotation: annotationLight,
+};
+
 export const themeBundles: Record<Theme, ThemeBundle> = {
   light: lightBundle,
   dark: darkBundle,
   legacy: legacyBundle,
+  sketch: sketchBundle,
 };
+
+/**
+ * Hand-drawn border radius used by box primitives when the sketch
+ * theme is active — asymmetric corners fake the wobble of a marker
+ * stroke. Returns undefined for non-sketch themes so callers keep
+ * their own radius.
+ */
+export const sketchRadius = (theme: Theme): string | undefined =>
+  theme === "sketch" ? "55px 18px 45px 20px / 20px 45px 18px 55px" : undefined;
 
 const ThemeContext = createContext<ThemeBundle>(lightBundle);
 
