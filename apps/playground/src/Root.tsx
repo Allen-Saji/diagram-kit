@@ -25,6 +25,7 @@ import { ListiclePosterExample } from "./examples/pages/ListiclePosterExample";
 import { ProductOnePagerExample } from "./examples/pages/ProductOnePagerExample";
 import { ComparisonColumnsExample } from "./examples/pages/ComparisonColumnsExample";
 import { BandStackPageExample } from "./examples/pages/BandStackPageExample";
+import { DiagramKitArchitecture } from "./examples/DiagramKitArchitecture";
 // Aliased to either ../../../private/index.tsx (when present) or
 // ./private-stub.ts (the empty default). Resolved by remotion.config.ts.
 import { privateRegistrations } from "@private/comps";
@@ -149,6 +150,14 @@ export const RemotionRoot: React.FC = () => {
           height={620}
         />
       </Folder>
+      <Folder name="architecture">
+        <Still
+          id="DiagramKitArchitecture"
+          component={DiagramKitArchitecture}
+          width={1600}
+          height={900}
+        />
+      </Folder>
       <Folder name="pages">
         <Still
           id="ListiclePosterExample"
@@ -176,6 +185,13 @@ export const RemotionRoot: React.FC = () => {
         />
       </Folder>
       <Folder name="debug">
+        <Still
+          id="DiagramKitArchitectureDebug"
+          component={DiagramKitArchitecture}
+          width={1600}
+          height={900}
+          defaultProps={{ debug: true }}
+        />
         <Still
           id="BTreeVsBPlusDebug"
           component={BTreeVsBPlus}

@@ -1,6 +1,6 @@
 ---
 name: diagram-kit
-description: Generate ByteByteGo-style technical diagrams (static PNG or animated MP4) for Allen's projects using the React + Remotion toolkit at ~/projects/diagram-kit. Use when asked to "diagram", "visualize architecture", "animate this flow", "make a technical diagram", "BBG-style diagram", or when any project (px402, Port Protocol, ReceiptAI, Docket, AgentBazaar, etc.) needs an architecture visualization. Not for whiteboard-style sketches (use excalidraw-diagram instead).
+description: Generate ByteByteGo-style technical diagrams, animated explainers, and narrated marketing/demo videos using the React + Remotion toolkit at ~/projects/diagram-kit. Use when asked to "diagram", "visualize architecture", "animate this flow", "make a technical diagram", "BBG-style diagram", "create a product video", or "make a narrated demo". Not for whiteboard-style sketches (use excalidraw-diagram instead).
 metadata:
   tags: diagram, remotion, visualization, architecture, bytebytego, png, mp4
 ---
@@ -19,6 +19,7 @@ Allen's personal toolkit for generating ByteByteGo-style technical diagrams. One
 - "BBG-style diagram"
 - "turn this architecture note into a diagram"
 - "make a one-pager / poster / pamphlet / carousel / infographic for X"
+- "create a product video / marketing video / narrated demo using Diagram Kit"
 
 **Do not invoke for:** interactive/editable whiteboard files, mind maps, flowcharts with loose layout — use `excalidraw-diagram` for those. (A hand-drawn *look* in a rendered PNG is covered here by `theme="sketch"`.)
 
@@ -56,6 +57,47 @@ The repo is a pnpm monorepo:
    - MP4: `bash scripts/render-mp4.sh <Name> tweet-16x9`
 
 Never skip step 5 on a new composition. Collisions are invisible until the checker flags them.
+
+## Marketing-video workflow
+
+Use this workflow when the user asks for a product video, launch video, demo
+video, narrated walkthrough, or social clip. Diagram Kit supplies reusable
+visual scenes inside a direct Remotion composition; it does not replace the
+product's real interface or brand.
+
+1. **Inspect before scripting.** Read the product README, landing-page theme,
+   real flows, verified metrics, and existing media. Do not invent traction or
+   performance claims.
+2. **Lock the story.** Define one viewer, one action, the problem, the product
+   reveal, proof, CTA, target platform, aspect ratio, and maximum duration.
+3. **Write narration first.** Keep the script fast and concrete. Generate or
+   record the voice track before scene animation, then derive scene starts from
+   actual audio timestamps. ElevenLabs word or character alignment can be
+   stored as JSON and consumed by Remotion.
+4. **Build with the product's visual system.** Reuse its colors, type, logo,
+   screenshots, and copy. Use Diagram Kit `FeatureCard`, `FlowBox`,
+   `TerminalCard`, `StepBadge`, `Glyph`, `Arrow`, and animation primitives for
+   architecture, flow, verification, terminal, and metric scenes.
+5. **Keep motion deterministic.** Use `useCurrentFrame()`, Diagram Kit motion
+   primitives, and Remotion sequences or transitions. Never use CSS animation.
+6. **Treat captions as opt-in.** Do not burn captions into the video unless the
+   user explicitly requests them. A separate SRT can be generated when needed.
+7. **Store video work centrally.** Put source and outputs under a shared video
+   workspace such as `~/projects/project-demos/<project-name>/`, never inside
+   the product source repository. Reuse one pnpm workspace and package store.
+8. **Verify delivery.** Inspect representative frames, run TypeScript checks,
+   probe the final media for resolution, frame rate, codecs, duration, and
+   audio/video start and end alignment, then open the final MP4 for review.
+
+For a typical 60-90 second product demo, use a problem-demo-result structure:
+
+```text
+Hook -> Problem -> Product reveal -> Working flow -> Verification -> Proof -> CTA
+```
+
+Prefer one visual idea per scene and change the screen every 4-10 seconds. Use
+faster changes during the working flow and longer holds only for proof or CTA
+frames that need to be read.
 
 ## Kit API reference
 

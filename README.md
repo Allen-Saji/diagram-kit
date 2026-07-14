@@ -25,6 +25,23 @@ animate. This kit puts the look back in code: same React composition
 renders to PNG and MP4, the layout is reproducible, and a checker
 catches collisions you would miss by eye.
 
+## Architecture
+
+Diagram Kit is an agent-first render pipeline. A reusable skill gives any coding
+agent the component API and layout rules. The agent authors a React composition,
+and Remotion renders it. The debug pass emits layout telemetry that `check.mjs`
+uses as a hard collision gate before PNG or MP4 output ships.
+
+![Diagram Kit architecture and verification flow](docs/architecture/diagram-kit-flow.png)
+
+The diagram is built with Diagram Kit itself. Its public source lives at
+[`apps/playground/src/examples/DiagramKitArchitecture.tsx`](apps/playground/src/examples/DiagramKitArchitecture.tsx).
+
+```bash
+node scripts/check.mjs DiagramKitArchitecture
+bash scripts/render-png.sh DiagramKitArchitecture blog docs/architecture/diagram-kit-flow.png
+```
+
 ## Stack
 
 - [Remotion](https://remotion.dev) 4.0.x — programmatic render pipeline
@@ -219,11 +236,44 @@ Tailwind `animate-*` classes do not render correctly in Remotion.
   `useInk` / `useFrame` / `useAnnotation` so primitives stay
   theme-correct under `theme="dark"`.
 
-## Use it from Claude Code
+## Marketing videos
+
+The repository skill also covers narrated product and demo videos. Diagram Kit
+provides the scene system while Remotion owns timing, audio, transitions, and
+the final encode. The workflow is:
+
+1. Inspect the product and reuse its real brand system.
+2. Lock the audience, problem, solution, proof, CTA, and duration.
+3. Generate or record narration before animation so scene timings follow the
+   audio rather than guesswork.
+4. Build architecture, product-flow, terminal, and metric scenes from Diagram
+   Kit primitives.
+5. Run visual inspection and media-duration checks before delivery.
+
+The Cloak402 demo used this workflow with `FeatureCard`, `FlowBox`, `StepBadge`,
+`TerminalCard`, `Glyph`, and animated arrows inside a direct Remotion
+composition timed to ElevenLabs narration. Burned-in captions remain opt-in.
+
+Video projects and outputs should live outside product source repositories. A
+shared workspace such as `~/projects/project-demos/<project-name>/` lets
+multiple videos reuse one pnpm store and Remotion installation.
+
+## Use it from any coding agent
 
 The repo ships with a `SKILL.md` that encodes the full kit API,
-composition workflow, and the conventions the checker enforces.
-Install it as a Claude Code skill:
+composition workflow, marketing-video workflow, and checker conventions.
+
+### Codex
+
+```bash
+mkdir -p ~/.codex/skills/diagram-kit
+curl -o ~/.codex/skills/diagram-kit/SKILL.md \
+  https://raw.githubusercontent.com/Allen-Saji/diagram-kit/main/SKILL.md
+```
+
+Start a new Codex session, then ask it to use the Diagram Kit skill.
+
+### Claude Code
 
 ```bash
 mkdir -p ~/.claude/skills/diagram-kit
@@ -231,9 +281,18 @@ curl -o ~/.claude/skills/diagram-kit/SKILL.md \
   https://raw.githubusercontent.com/Allen-Saji/diagram-kit/main/SKILL.md
 ```
 
-Once installed, ask Claude to "diagram the architecture of X" or
-"animate this flow" and the skill drafts the composition, iterates
-against the checker, and renders the asset.
+Start a new Claude Code session, then ask it to use the Diagram Kit skill.
+
+### Other agents
+
+Copy `SKILL.md` into `<agent-skills-dir>/diagram-kit/SKILL.md`. Shared agent
+skill roots such as `~/.agents/skills` also work when the agent supports them.
+The skill content and Diagram Kit workflow are agent-neutral.
+
+Once installed, ask the agent to "diagram the architecture of X", "animate
+this flow", or "create a narrated marketing video using Diagram Kit". The
+skill drafts the composition, iterates against the checker, and renders the
+asset.
 
 ## Contributing
 
