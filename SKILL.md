@@ -21,7 +21,7 @@ Allen's personal toolkit for generating ByteByteGo-style technical diagrams. One
 - "make a one-pager / poster / pamphlet / carousel / infographic for X"
 - "create a product video / marketing video / narrated demo using Diagram Kit"
 
-**Do not invoke for:** interactive/editable whiteboard files, mind maps, flowcharts with loose layout — use `excalidraw-diagram` for those. (A hand-drawn *look* in a rendered PNG is covered here by `theme="sketch"`.)
+**Do not invoke for:** interactive/editable whiteboard files, mind maps, flowcharts with loose layout - use `excalidraw-diagram` for those. (A hand-drawn _look_ in a rendered PNG is covered here by `theme="sketch"`.)
 
 ## Workflow
 
@@ -39,7 +39,7 @@ The repo is a pnpm monorepo:
 2. **Draft composition.** Two locations:
    - `apps/playground/src/examples/<Name>.tsx` — public, ships in the repo. Use this for fidelity probes, BBG reference clones, and any diagram intended for the OSS playground.
    - `private/projects/<Name>.tsx` — Allen-personal, gitignored. Use this for project-specific diagrams (px402, Port Protocol, ReceiptAI, Docket, AgentBazaar, etc.) where branding, audio, and Allen-owned imagery live.
-   Inside the comp:
+     Inside the comp:
    - Accept `debug?: boolean` and thread into `Canvas`.
    - Compose with `Canvas` + `At` + kit primitives.
    - Give every placed primitive a unique `debugId`.
@@ -104,7 +104,13 @@ frames that need to be read.
 All kit primitives ship from `packages/diagram-kit/`. Inside any composition (public or private), import from the library entry:
 
 ```tsx
-import { Canvas, At, Card, Arrow, Title /* ... */ } from "@allen-saji/diagram-kit";
+import {
+  Canvas,
+  At,
+  Card,
+  Arrow,
+  Title /* ... */,
+} from "@allen-saji/diagram-kit";
 ```
 
 `workspace:*` links the playground (and any other workspace) to the live source, so changes to the kit are picked up without a rebuild during dev.
@@ -166,7 +172,12 @@ Props: `color` (default `blue`), `keys` (required), `subtext`, `width`, `padding
 Rounded fixed-size pill for sequence steps (Write → WAL → Memtable).
 
 ```tsx
-<FlowBox color="peach" title="Memtable" subtitle="sorted in-memory" debugId="memtable" />
+<FlowBox
+  color="peach"
+  title="Memtable"
+  subtitle="sorted in-memory"
+  debugId="memtable"
+/>
 ```
 
 Props: `color` (required), `title` (required), `subtitle`, `width` (default 160), `height` (default 80), `radius`, `titleSize` (22), `subtitleSize` (14), `style`, `debugId`.
@@ -190,6 +201,7 @@ Straight or elbow arrow with optional inline label. Lives at canvas level (SVG o
 Props: `from`, `to` (both required `{x, y}`), `waypoints`, `color` (default ink.arrow), `strokeWidth` (2), `headSize` (10), `arrowStart`, `arrowEnd` (default true), `label`, `labelT` (0..1 along first segment), `labelOffset` (perpendicular px), `labelBackground`, `labelColor`, `labelSize` (14), `labelWeight`, `dashed`, `progress` (0..1 for draw-in), `debugId`.
 
 **Notes:**
+
 - `Arrow` is placed directly inside `Canvas`, NOT inside `<At>`. `from`/`to` are absolute canvas coords.
 - When `progress` is set (typically via `DrawArrow`), arrow heads and labels fade in with the line draw. At `progress=0` everything is invisible.
 - `debugId` makes the arrow participate in `check.mjs` segment-vs-card intersection checks. Tag every arrow that should be layout-verified.
@@ -213,7 +225,9 @@ Props: `children` (required), `size` (default 15), `weight` (700), `color` (ink.
 Italic side-note. Red for walkthrough callouts, gray for ambient notes.
 
 ```tsx
-<Annotation tone="red" debugId="note-1">1. Agent requests resource</Annotation>
+<Annotation tone="red" debugId="note-1">
+  1. Agent requests resource
+</Annotation>
 ```
 
 Props: `tone` (`red`|`gray`, default `red`), `size` (15), `weight` (500), `style`, `debugId`.
@@ -246,7 +260,12 @@ Props: `n` (required, number or string), `color` (PaletteColor, default `mint`),
 Monospace snippet on a tinted pastel background — for SQL, shell, addresses, short code references inside a diagram. Use `TerminalCard` if you need full terminal chrome.
 
 ```tsx
-<CodeBlock color="blue" lang="ts" width={720} debugId="code-poll">{`async function poll() {
+<CodeBlock
+  color="blue"
+  lang="ts"
+  width={720}
+  debugId="code-poll"
+>{`async function poll() {
   const res = await fetch("/inbox");
 }`}</CodeBlock>
 ```
@@ -258,7 +277,12 @@ Props: `children` (string, required), `color` (PaletteColor, default `gray`), `l
 Black terminal-window card with macOS-style traffic-light dots and a monospace body. Use for CLI output, shell sessions, log fragments.
 
 ```tsx
-<TerminalCard title="poll.log" width={720} height={260} debugId="term-out">{`[12:00:00] GET /inbox -> 200
+<TerminalCard
+  title="poll.log"
+  width={720}
+  height={260}
+  debugId="term-out"
+>{`[12:00:00] GET /inbox -> 200
 [12:00:05] GET /inbox -> 200`}</TerminalCard>
 ```
 
@@ -272,13 +296,31 @@ Sequence-diagram swim lanes — header cards per actor + dashed vertical lifelin
 const LANE = { sarah: 280, db: 800, alex: 1320 };
 <SwimLanes
   lanes={[
-    { id: "sarah", title: "Sarah", subtitle: "writer A", color: "pink", x: LANE.sarah },
-    { id: "db",    title: "Database", subtitle: "row v=1", color: "blue", x: LANE.db },
-    { id: "alex",  title: "Alex",  subtitle: "writer B", color: "mint", x: LANE.alex },
+    {
+      id: "sarah",
+      title: "Sarah",
+      subtitle: "writer A",
+      color: "pink",
+      x: LANE.sarah,
+    },
+    {
+      id: "db",
+      title: "Database",
+      subtitle: "row v=1",
+      color: "blue",
+      x: LANE.db,
+    },
+    {
+      id: "alex",
+      title: "Alex",
+      subtitle: "writer B",
+      color: "mint",
+      x: LANE.alex,
+    },
   ]}
   headerY={150}
   lifeline={{ top: 230, bottom: 800 }}
-/>
+/>;
 ```
 
 Props: `lanes` (required `SwimLane[]`), `headerY` (default 150), `lifeline` (required `{top, bottom}`), `lifelineColor?` (defaults to theme muted ink), `headerPadding`, `headerRadius`, `headerTitleSize`, `headerSubtitleSize`.
@@ -297,10 +339,20 @@ Stage-rail layout — left column of icon+label tiles tied to right-side content
   width={1480}
   rowHeight={140}
   stages={[
-    { id: "build", label: "Build", icon: <span>⚙</span>, color: "mint",
-      content: <Card debugId="build-card" color="mint" title="javac" /> },
-    { id: "load",  label: "Load",  icon: <span>↧</span>, color: "blue",
-      content: <Card debugId="load-card" color="blue" title="ClassLoader" /> },
+    {
+      id: "build",
+      label: "Build",
+      icon: <span>B</span>,
+      color: "mint",
+      content: <Card debugId="build-card" color="mint" title="javac" />,
+    },
+    {
+      id: "load",
+      label: "Load",
+      icon: <span>L</span>,
+      color: "blue",
+      content: <Card debugId="load-card" color="blue" title="ClassLoader" />,
+    },
   ]}
 />
 ```
@@ -579,9 +631,19 @@ Lineal-color topic icon — the BBG-style icon illustrations. Fixed 80x80 viewBo
 
 Props: `name` (required `GlyphName`), `color` (default `gray`), `size` (default 64), `label`, `labelSize` (default 14), `style`, `debugId?`.
 
-Registry (`GLYPH_NAMES` exports the list): `user`, `user-query`, `agent`, `llm`, `embedding`, `vector-db`, `knowledge-graph`, `doc`, `retrieval`, `filter`, `api`, `chat`, `report`, `server`, `lock`, `shield`, `coin`, `gauge`, `clock`, `wallet`, `chain`.
+Registry (`GLYPH_NAMES` exports the list):
 
-**Glyph policy.** Three asset classes, never mixed: house glyphs for *concepts* (this registry), `BrandIcon` for *companies* (real trademark SVGs), `StatusIcon`/`StepBadge` for micro-marks. Nouns and actors get glyphs; verbs and flows stay arrows with labels. One glyph per card: hero size (56-96) inside step/feature cards, small (20-32) inline, none in dense text panels. When a composition needs a missing noun, draw it in `Glyph.tsx` following the style spec in the file header (4px ink outlines, 3px inner details, 2.5px fine lines at 0.45 opacity, rounded joins) and it joins the registry.
+- Actors, AI, and existing concepts: `user`, `user-query`, `agent`, `llm`, `embedding`, `vector-db`, `knowledge-graph`, `doc`, `retrieval`, `filter`, `api`, `chat`, `report`, `server`, `lock`, `shield`, `coin`, `gauge`, `clock`, `wallet`, `chain`.
+- Clients and interfaces: `browser`, `mobile`, `terminal`, `code`.
+- Compute and runtime: `cloud`, `container`, `cluster`, `function`, `worker`.
+- Data and storage: `database`, `storage`, `object-storage`, `cache`.
+- Messaging and integration: `queue`, `topic`, `event-bus`, `webhook`.
+- Networking and delivery: `internet`, `dns`, `api-gateway`, `load-balancer`, `cdn`, `firewall`.
+- Engineering workflow: `repository`, `git-branch`, `pull-request`, `pipeline`, `package`, `test-suite`.
+- Observability: `logs`, `metrics`, `traces`, `alert`.
+- Configuration and identity: `config`, `secret`, `identity`.
+
+**Glyph policy.** Three asset classes, never mixed: house glyphs for _concepts_ (this registry), `BrandIcon` for _companies_ (real trademark SVGs), `StatusIcon`/`StepBadge` for micro-marks. Nouns and actors get glyphs; verbs and flows stay arrows with labels. One glyph per card: hero size (56-96) inside step/feature cards, small (20-32) inline, none in dense text panels. When a composition needs a missing noun, add its renderer to the matching category module under `kit/glyphs/` following the style spec in `Glyph.tsx` (4px ink outlines, 3px inner details, 2.5px fine lines at 0.45 opacity, rounded joins) and it joins the registry.
 
 ### BrandIcon
 
@@ -627,7 +689,18 @@ Product one-pager card: pill title + bullets + optional media thumbnail on a whi
   color="mint"
   width={680}
   bullets={["MCP server and client architecture", "Tool calling reliability"]}
-  media={<div style={{ width: "100%", height: 190, background: "#DFF1E7", borderRadius: 12 }}>...</div>}
+  media={
+    <div
+      style={{
+        width: "100%",
+        height: 190,
+        background: "#DFF1E7",
+        borderRadius: 12,
+      }}
+    >
+      ...
+    </div>
+  }
 />
 ```
 
@@ -660,14 +733,17 @@ Captioned icon grid — the "Customer 360" treatment: many small icons, tiny cap
   items={[
     { icon: "report", caption: "Sales" },
     { icon: "chat", caption: "Service" },
-    { icon: <BrandIcon icon={siGithub} chip={false} size={32} />, caption: "GitHub" },
+    {
+      icon: <BrandIcon icon={siGithub} chip={false} size={32} />,
+      caption: "GitHub",
+    },
   ]}
 />
 ```
 
 Props: `items` (required `{icon: GlyphName | ReactNode, caption}[]`), `cols` (required), `cellWidth` (default 104), `color` (default `gray`), `iconSize` (default 40), `captionSize` (default 13), `gapX` (default 8), `gapY` (default 18), `style`, `debugId?`.
 
-**Container debugId rule:** when an `IconGrid` (or any tracked primitive) sits *inside* a `BandStack`/`FeatureCard` that already has a debugId, give only one of them the id — parent + child both tracked reads as a collision.
+**Container debugId rule:** when an `IconGrid` (or any tracked primitive) sits _inside_ a `BandStack`/`FeatureCard` that already has a debugId, give only one of them the id - parent + child both tracked reads as a collision.
 
 ### BandStack
 
@@ -678,8 +754,14 @@ Horizontal layer bands with an optional left label rail + leader lines — the e
   width={1760}
   railWidth={300}
   bands={[
-    { rail: "System of engagement", color: "blue", height: 130, title: "Chat Surface", content: <>...</> },
-    { rail: "Trust layer", height: 110, content: <>...</> },   // no color = white surface
+    {
+      rail: "System of engagement",
+      color: "blue",
+      height: 130,
+      title: "Chat Surface",
+      content: <>...</>,
+    },
+    { rail: "Trust layer", height: 110, content: <>...</> }, // no color = white surface
   ]}
 />
 ```
@@ -715,10 +797,16 @@ Full-page compositions that own their `Canvas`. Import from the same entry.
 
 ```tsx
 <ListiclePoster
-  w={1600} h={1560} title="Top Anti-Patterns in Service Architecture" rightSlot="brand"
+  w={1600}
+  h={1560}
+  title="Top Anti-Patterns in Service Architecture"
+  rightSlot="brand"
   cols={2}
   panels={[
-    { title: "Splitting Early", content: (box) => <>{/* At coords are panel-local */}</> },
+    {
+      title: "Splitting Early",
+      content: (box) => <>{/* At coords are panel-local */}</>,
+    },
   ]}
 />
 ```
@@ -742,7 +830,8 @@ Props: `header` (required), `features` (required `OnePagerFeature[]` — Feature
 
 ```tsx
 <ComparisonColumns
-  w={1600} h={1150}
+  w={1600}
+  h={1150}
   columns={[{ title: "RAG", color: "blue", content: (box) => <>...</> }]}
 />
 ```
@@ -752,7 +841,15 @@ Props: `columns` (required `{title, color, content}[]`), `w`/`h`, `theme`, `debu
 ### Palette + theme
 
 ```ts
-type PaletteColor = "mint" | "peach" | "blue" | "yellow" | "pink" | "purple" | "lavender" | "gray";
+type PaletteColor =
+  | "mint"
+  | "peach"
+  | "blue"
+  | "yellow"
+  | "pink"
+  | "purple"
+  | "lavender"
+  | "gray";
 ```
 
 Four themes ship: `light` (default, recalibrated BBG saturation), `dark` (neon-on-dark, mostly-hollow cards), `legacy` (original kit hex values), and `sketch` (light palette on a graph-paper page, hand-drawn font swapped in via CSS variables, wobbly asymmetric border radius on `Card`/`Panel`/`FlowBox`/`FeatureCard` — see `sketchRadius()` in theme.ts). Each `palette[color]` is a `Swatch = { bg, border, text }`.
@@ -762,10 +859,10 @@ The active palette is selected by the `theme` prop on `<Canvas>`. **Don't import
 ```ts
 import { useSwatch, useInk, useFrame, useAnnotation } from "../kit";
 
-const p = useSwatch("blue");      // current theme's blue swatch
-const ink = useInk();              // { heading, body, muted, arrow }
-const frame = useFrame();          // { border, bg, pageBg }
-const annot = useAnnotation();     // { red, gray, redMuted }
+const p = useSwatch("blue"); // current theme's blue swatch
+const ink = useInk(); // { heading, body, muted, arrow }
+const frame = useFrame(); // { border, bg, pageBg }
+const annot = useAnnotation(); // { red, gray, redMuted }
 ```
 
 The bare `palette`, `ink`, `frame`, `annotation` exports still resolve to the light variants for back-compat. Source of truth: `packages/diagram-kit/src/kit/palette.ts` + `packages/diagram-kit/src/kit/theme.ts`.
@@ -785,18 +882,18 @@ import { canvasPresets } from "@allen-saji/diagram-kit";
 
 <Canvas {...canvasPresets.bbgBlogInline} debug={debug}>
   ...
-</Canvas>
+</Canvas>;
 ```
 
-| Preset | Dims (w x h) | Use |
-|---|---|---|
-| `bbgBlogInline` | 1456 x 819 | 16:9 hero asset for inline blog placement |
-| `bbgTallPoster` | 2484 x 3002 | Tall poster format for vertical comparison posts |
-| `bbgLandscapeArch` | 2472 x 1912 | Wide architecture diagrams (LB + JVM + storage stacks) |
-| `poster` | 1600 x 2000 | Listicle / layered-arch poster pages |
-| `slide` | 1920 x 1080 | 16:9 presentation slide / video-frame page |
-| `carousel` | 1080 x 1350 | LinkedIn / X carousel card (4:5 portrait) |
-| `a4` | 1240 x 1754 | A4 at 150dpi — render `hd` (2x) for print-ready 300dpi |
+| Preset             | Dims (w x h) | Use                                                    |
+| ------------------ | ------------ | ------------------------------------------------------ |
+| `bbgBlogInline`    | 1456 x 819   | 16:9 hero asset for inline blog placement              |
+| `bbgTallPoster`    | 2484 x 3002  | Tall poster format for vertical comparison posts       |
+| `bbgLandscapeArch` | 2472 x 1912  | Wide architecture diagrams (LB + JVM + storage stacks) |
+| `poster`           | 1600 x 2000  | Listicle / layered-arch poster pages                   |
+| `slide`            | 1920 x 1080  | 16:9 presentation slide / video-frame page             |
+| `carousel`         | 1080 x 1350  | LinkedIn / X carousel card (4:5 portrait)              |
+| `a4`               | 1240 x 1754  | A4 at 150dpi - render `hd` (2x) for print-ready 300dpi |
 
 Twitter/X MP4 presets stay in `render-mp4.sh` since those are render-time concerns (bitrate/aspect), not canvas dimensions.
 
@@ -842,29 +939,30 @@ The debug registration is what lets `iterate.sh MyDiagram --debug` find `MyDiagr
 
 ## Scripts reference
 
-| Script | Usage | Output |
-|---|---|---|
-| `bash scripts/iterate.sh <Name> [--debug] [--full]` | Fast 0.5x preview | `out/iter/<Name>[.debug].png` |
-| `node scripts/check.mjs <Name> [--min-area=N]` | Headless collision check | JSON report + exit 1 on overlap |
-| `bash scripts/render-png.sh <Name> [blog\|hd\|4k\|ultra\|8k]` | Final PNG | `out/<theme>/<Name>-<preset>.png` |
-| `bash scripts/render-mp4.sh <Name> [tweet-16x9\|tweet-sq\|tweet-9x16\|blog]` | Final MP4, H.264/yuv420p | `out/<theme>/<Name>-<preset>.mp4` |
-| `node scripts/render-via-api.mjs <Name> <out-path> [scale]` | Node-API render fallback when CLI misbehaves | as specified |
-| `pnpm dev` | Live preview UI (Remotion studio) | http://localhost:3000 |
-| `pnpm test:check` | Run check.mjs against every public fidelity example | exit 1 on any overlap |
+| Script                                                                       | Usage                                               | Output                            |
+| ---------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------- |
+| `bash scripts/iterate.sh <Name> [--debug] [--full]`                          | Fast 0.5x preview                                   | `out/iter/<Name>[.debug].png`     |
+| `node scripts/check.mjs <Name> [--min-area=N]`                               | Headless collision check                            | JSON report + exit 1 on overlap   |
+| `bash scripts/render-png.sh <Name> [blog\|hd\|4k\|ultra\|8k]`                | Final PNG                                           | `out/<theme>/<Name>-<preset>.png` |
+| `bash scripts/render-mp4.sh <Name> [tweet-16x9\|tweet-sq\|tweet-9x16\|blog]` | Final MP4, H.264/yuv420p                            | `out/<theme>/<Name>-<preset>.mp4` |
+| `node scripts/render-via-api.mjs <Name> <out-path> [scale]`                  | Node-API render fallback when CLI misbehaves        | as specified                      |
+| `pnpm dev`                                                                   | Live preview UI (Remotion studio)                   | http://localhost:3000             |
+| `pnpm test:check`                                                            | Run check.mjs against every public fidelity example | exit 1 on any overlap             |
 
 PNG resolution by preset (canvas → output):
 
-| Preset | Multiplier | 1600×1100 canvas | 1920×1080 canvas | When to use |
-|---|---|---|---|---|
-| `blog` | 1× | 1600×1100 | 1920×1080 (FHD) | Inline blog asset, small embeds |
-| `hd` | 2× | 3200×2200 | 3840×2160 (UHD) | Default Twitter/X hero, retina display |
-| `4k` | auto | 3840×2640 | 3840×2160 | Guarantees ≥3840px wide regardless of canvas — use when posting to platforms that compress aggressively (Twitter, LinkedIn) |
-| `ultra` | 3× | 4800×3300 | 5760×3240 | Print, ultra-wide displays |
-| `8k` | auto | 7680×5280 | 7680×4320 | Archive / poster print |
+| Preset  | Multiplier | 1600x1100 canvas | 1920x1080 canvas | When to use                                                                                                                  |
+| ------- | ---------- | ---------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `blog`  | 1x         | 1600x1100        | 1920x1080 (FHD)  | Inline blog asset, small embeds                                                                                              |
+| `hd`    | 2x         | 3200x2200        | 3840x2160 (UHD)  | Default Twitter/X hero, retina display                                                                                       |
+| `4k`    | auto       | 3840x2640        | 3840x2160        | Guarantees >=3840px wide regardless of canvas - use when posting to platforms that compress aggressively (Twitter, LinkedIn) |
+| `ultra` | 3x         | 4800x3300        | 5760x3240        | Print, ultra-wide displays                                                                                                   |
+| `8k`    | auto       | 7680x5280        | 7680x4320        | Archive / poster print                                                                                                       |
 
 Output is auto-routed to `out/<theme>/` based on the `theme="..."` prop detected in the comp's source. Pass an explicit output path to override.
 
 MP4 presets:
+
 - `tweet-16x9` — 1920x1080 @ 8 Mbps (landscape, default)
 - `tweet-sq` — 1080x1080 @ 8 Mbps (square)
 - `tweet-9x16` — 1080x1920 @ 12 Mbps (vertical)
@@ -877,7 +975,7 @@ MP4 presets:
 - **Annotation tones.** Red italic for walkthrough steps, gray italic for ambient notes.
 - **`debugId` on every placed primitive — except `Panel`.** `Panel` is a semantic container; cards intentionally sit inside it. Giving a `Panel` a `debugId` makes the collision checker flag every contained card as an overlap. Leave `Panel` unidentified; put `debugId` on the actual content.
 - **Pick one palette family per semantic role.** e.g. if `blue` = server, don't also use `blue` for a data store elsewhere in the same diagram.
-- **Glyph policy.** Concepts get `Glyph` (house lineal-color registry), companies get `BrandIcon` (never hand-draw a trademark), micro-marks get `StatusIcon`/`StepBadge`. Nouns/actors get glyphs; verbs/flows stay arrows. One glyph per card — hero size (56-96) in step/feature cards, small (20-32) inline. Missing a noun? Draw it into `Glyph.tsx` per the style spec in its header.
+- **Glyph policy.** Concepts get `Glyph` (house lineal-color registry), companies get `BrandIcon` (never hand-draw a trademark), micro-marks get `StatusIcon`/`StepBadge`. Nouns/actors get glyphs; verbs/flows stay arrows. One glyph per card - hero size (56-96) in step/feature cards, small (20-32) inline. Missing a noun? Add it to the matching category module under `kit/glyphs/` per the style spec in `Glyph.tsx`.
 - **One tracked container per region.** `IconGrid` inside a `BandStack` (or similar nesting): give the debugId to one of them, not both — parent + child both tracked reads as a collision, same reason `Panel` takes no debugId.
 - **No CSS transitions.** All motion via `useCurrentFrame()` — enforced by Remotion's rendering model, not an aesthetic choice.
 - **Mono font for technical strings.** Addresses, tx hashes, CLI output, endpoints.
@@ -887,6 +985,7 @@ MP4 presets:
 Study these for patterns before writing a new diagram. Public examples live under `apps/playground/src/examples/`; Allen-personal project comps live under `private/projects/`.
 
 Public (`apps/playground/src/examples/fidelity/`):
+
 - `BTreeVsBPlus.tsx` — two-panel comparison, uses `Panel` + `TreeNode` + `Arrow`.
 - `LsmTrees.tsx` — multi-region block diagram with `FlowBox` chains.
 - `LsmCompaction.tsx` — stacked tier visualization.
@@ -905,6 +1004,7 @@ Public (`apps/playground/src/examples/fidelity/`):
 - `ShapesAndRatingsProbe.tsx` — flat + pointy Hexagons, three-set Venn, DotRating rows.
 
 Private (`private/projects/` — Allen-only):
+
 - `Px402Static.tsx` — sequence diagram with lifelines, 1600x1000.
 - `Px402Animated.tsx` — 15s animated version. Shows `Appear` + `DrawArrow` + `Pulse` choreography, numbered badges on step arrows as Arrow labels.
 - `PortProtocolArch.tsx` — 3-panel with rule pipeline, pass/fail branch, arrow labels as flow semantics.
@@ -918,7 +1018,7 @@ Private (`private/projects/` — Allen-only):
 - **Skipping `check.mjs`.** Two cards can look fine in a still preview and still overlap by 2px; only the checker catches it deterministically.
 - **Arrows passing through cards.** `check.mjs` flags these only when the arrow has a `debugId`. Untagged arrows are not checked. Always tag diagram arrows with `debugId` to get coverage. The checker shrinks card rects by 5px before testing, so arrows that simply touch a card edge don't false-positive, but arrows whose endpoints sit >5px inside another card's interior will be flagged.
 - **Arrows passing through raw `<div>` text.** Don't author raw `<div>` for standalone text inside a composition — `check.mjs` has an orphan text walker that emits `ORPHAN::` rects for any text not inside a kit primitive, and those rects participate in arrow intersection. An arrow crossing an orphan text block will be flagged at check time. Always use `Label` (section header), `Annotation` (italic note), or `Title` (page headline) instead of a bare `<div>`.
-- **Lifelines visible through on-lane cards.** Sequence-diagram lifelines (dashed vertical lines) are rendered without `debugId` since they legitimately span the full diagram height. But any `Card` placed *on* a lane (e.g. "Crank11 pops queue" on the PER lane) must have a **solid fill** — do NOT use `outline` mode for lane cards, because `outline` sets the card background to transparent and the dashed lifeline will show through the card body. The checker can't catch this geometrically; it's a rendering-order issue. Rule of thumb: `outline` cards only for elements *off* the lanes.
+- **Lifelines visible through on-lane cards.** Sequence-diagram lifelines (dashed vertical lines) are rendered without `debugId` since they legitimately span the full diagram height. But any `Card` placed _on_ a lane (e.g. "Crank11 pops queue" on the PER lane) must have a **solid fill** - do NOT use `outline` mode for lane cards, because `outline` sets the card background to transparent and the dashed lifeline will show through the card body. The checker can't catch this geometrically; it's a rendering-order issue. Rule of thumb: `outline` cards only for elements _off_ the lanes.
 - **Canvas dimensions must match the render preset.** Setting `<Canvas w=1600 h=1000>` and rendering via `render-mp4.sh <comp> tweet-16x9` (which targets 1920x1080) causes Remotion to letterbox or pad the mismatch, producing empty space in the final video. Match canvas dims to the intended preset from the start: `tweet-16x9` → 1920x1080, `tweet-sq` → 1080x1080, `tweet-9x16` → 1080x1920, `blog` PNG → any 16:10-ish ratio is fine. For static PNGs, any dims work since the composition is rendered at its native size. For MP4s, always pick canvas dims that match a preset.
 - **Animated compositions render at final frame for checks.** `check.mjs` automatically uses `composition.durationInFrames - 1` when durationInFrames > 1. This avoids spurious collisions from in-flight `Appear` / `ScaleIn` translates during the first few frames. For still compositions, it renders frame 0.
 - **Long text overflowing `FlowBox`.** `FlowBox` is fixed `width` × `height`. Use `Card` (inline-flex, sizes to content) when content is variable-length.

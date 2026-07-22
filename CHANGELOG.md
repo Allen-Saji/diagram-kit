@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Expanded `Glyph` from 21 to 57 names with vendor-neutral software
+  engineering concepts for clients, compute, data, messaging, networking,
+  delivery workflows, observability, configuration, and identity.
+- Split the new glyph renderers into category modules under `kit/glyphs/`
+  while preserving the public `Glyph`, `GlyphName`, and `GLYPH_NAMES` API.
+
 ## [0.3.0] - 2026-07-06
 
 Page-format expansion - the kit now produces full pages (listicle

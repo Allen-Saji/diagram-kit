@@ -129,7 +129,7 @@ export const RemotionRoot: React.FC = () => {
           id="GlyphProbe"
           component={GlyphProbe}
           width={1600}
-          height={1080}
+          height={1920}
         />
         <Still
           id="PagePrimitivesProbe"
@@ -308,7 +308,7 @@ export const RemotionRoot: React.FC = () => {
           id="GlyphProbeDebug"
           component={GlyphProbe}
           width={1600}
-          height={1080}
+          height={1920}
           defaultProps={{ debug: true }}
         />
         <Still

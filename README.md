@@ -94,6 +94,11 @@ The glyph system provides reusable topic icons with palette-aware fills and
 fixed ink outlines. The public source is
 [`GlyphProbe.tsx`](apps/playground/src/examples/fidelity/GlyphProbe.tsx).
 
+The 57-name registry covers actors and AI, clients and code, compute and
+runtime, data and storage, messaging, networking, engineering workflow,
+observability, configuration, identity, security, and crypto. Use `BrandIcon`
+for vendor marks; `Glyph` remains vendor-neutral.
+
 ![Diagram Kit glyph registry](docs/samples/glyph-registry.png)
 
 ### Demo video made with Diagram Kit
@@ -136,13 +141,7 @@ Create `apps/playground/src/examples/HelloDiagram.tsx`:
 
 ```tsx
 import React from "react";
-import {
-  Arrow,
-  At,
-  Canvas,
-  Card,
-  Title,
-} from "@allen-saji/diagram-kit";
+import { Arrow, At, Canvas, Card, Title } from "@allen-saji/diagram-kit";
 
 export const HelloDiagram: React.FC<{ debug?: boolean }> = ({
   debug = false,
@@ -184,12 +183,7 @@ Register it in `apps/playground/src/Root.tsx`:
 ```tsx
 import { HelloDiagram } from "./examples/HelloDiagram";
 
-<Still
-  id="HelloDiagram"
-  component={HelloDiagram}
-  width={1200}
-  height={500}
-/>
+<Still id="HelloDiagram" component={HelloDiagram} width={1200} height={500} />;
 ```
 
 Check and render it:
@@ -254,38 +248,43 @@ animation classes do not render deterministically in Remotion.
 
 `Canvas` accepts `theme="light" | "dark" | "sketch" | "legacy"`.
 
-| Theme | Use |
-|---|---|
-| `light` | Default editorial palette on a pale background. |
-| `dark` | Neon accents and high-contrast protocol or CLI visuals. |
+| Theme    | Use                                                         |
+| -------- | ----------------------------------------------------------- |
+| `light`  | Default editorial palette on a pale background.             |
+| `dark`   | Neon accents and high-contrast protocol or CLI visuals.     |
 | `sketch` | Graph paper, hand-drawn typography, and asymmetric borders. |
-| `legacy` | Original palette for older published compositions. |
+| `legacy` | Original palette for older published compositions.          |
 
 Named canvas presets are available through `canvasPresets`:
 
-| Preset | Dimensions | Use |
-|---|---:|---|
-| `bbgBlogInline` | 1456 x 819 | Blog hero or inline visual. |
-| `bbgTallPoster` | 2484 x 3002 | Tall comparison or decision tree. |
-| `bbgLandscapeArch` | 2472 x 1912 | Large architecture diagram. |
-| `poster` | 1600 x 2000 | Listicle or layered poster. |
-| `slide` | 1920 x 1080 | Presentation or video frame. |
-| `carousel` | 1080 x 1350 | Portrait social card. |
-| `a4` | 1240 x 1754 | Print page at 150 DPI. |
+| Preset             |  Dimensions | Use                               |
+| ------------------ | ----------: | --------------------------------- |
+| `bbgBlogInline`    |  1456 x 819 | Blog hero or inline visual.       |
+| `bbgTallPoster`    | 2484 x 3002 | Tall comparison or decision tree. |
+| `bbgLandscapeArch` | 2472 x 1912 | Large architecture diagram.       |
+| `poster`           | 1600 x 2000 | Listicle or layered poster.       |
+| `slide`            | 1920 x 1080 | Presentation or video frame.      |
+| `carousel`         | 1080 x 1350 | Portrait social card.             |
+| `a4`               | 1240 x 1754 | Print page at 150 DPI.            |
 
 ## Component surface
 
-| Group | Components |
-|---|---|
-| Layout | `Canvas`, `At`, `Panel`, `SwimLanes`, `StageRail`, `SubPanelGrid`, `BandStack` |
-| Content | `Card`, `FlowBox`, `FeatureCard`, `CodeBlock`, `TerminalCard`, `BulletList` |
-| Relationships | `Arrow`, `FanArrow`, `TreeNode`, `RelationshipNode`, `RadialMindMap`, `Venn` |
-| Visuals | `Glyph`, `BrandIcon`, `IconNode`, `Hexagon`, `Cylinder`, `MiniChart`, `DotRating` |
-| Labels | `Title`, `Label`, `Annotation`, `TagChip`, `PillTitle`, `StepBadge`, `StatusIcon` |
-| Identity | `LogoChip`, `AvatarChip`, `IconBadge` |
-| Pages | `PageHeader`, `PageFooter`, `IconGrid`, `ComparisonTable`, `BeforeAfterSplit` |
-| Motion | `Appear`, `ScaleIn`, `DrawArrow`, `Pulse`, `Hold`, `Typewriter` |
-| Templates | `ListiclePoster`, `ProductOnePager`, `ComparisonColumns` |
+| Group         | Components                                                                        |
+| ------------- | --------------------------------------------------------------------------------- |
+| Layout        | `Canvas`, `At`, `Panel`, `SwimLanes`, `StageRail`, `SubPanelGrid`, `BandStack`    |
+| Content       | `Card`, `FlowBox`, `FeatureCard`, `CodeBlock`, `TerminalCard`, `BulletList`       |
+| Relationships | `Arrow`, `FanArrow`, `TreeNode`, `RelationshipNode`, `RadialMindMap`, `Venn`      |
+| Visuals       | `Glyph`, `BrandIcon`, `IconNode`, `Hexagon`, `Cylinder`, `MiniChart`, `DotRating` |
+| Labels        | `Title`, `Label`, `Annotation`, `TagChip`, `PillTitle`, `StepBadge`, `StatusIcon` |
+| Identity      | `LogoChip`, `AvatarChip`, `IconBadge`                                             |
+| Pages         | `PageHeader`, `PageFooter`, `IconGrid`, `ComparisonTable`, `BeforeAfterSplit`     |
+| Motion        | `Appear`, `ScaleIn`, `DrawArrow`, `Pulse`, `Hold`, `Typewriter`                   |
+| Templates     | `ListiclePoster`, `ProductOnePager`, `ComparisonColumns`                          |
+
+`GLYPH_NAMES` exports all 57 glyph names. The software-engineering additions
+include `browser`, `container`, `database`, `queue`, `api-gateway`,
+`load-balancer`, `git-branch`, `pipeline`, `logs`, `metrics`, `traces`, and
+the rest of the rendered registry above.
 
 Read [`SKILL.md`](SKILL.md) for the complete component API, props, layout rules,
 scripts, and reference compositions.

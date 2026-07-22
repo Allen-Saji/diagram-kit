@@ -15,11 +15,11 @@ export type GlyphProbeProps = {
 };
 
 /**
- * Fidelity probe for the `Glyph` registry — every lineal-color glyph
+ * Fidelity probe for the `Glyph` registry - every lineal-color glyph
  * in the kit, plus a tint row proving the per-palette recolor.
  *
  * Rows cycle through three palette colors so each glyph is seen tinted;
- * the bottom strip renders one glyph across all eight palette colors —
+ * the bottom strip renders one glyph across all eight palette colors -
  * the per-column recolor trick BBG uses in its comparison posters.
  */
 
@@ -35,19 +35,19 @@ const TINT_COLORS: PaletteColor[] = [
   "gray",
 ];
 
-const COLS = 7;
-const X0 = 100;
-const PITCH_X = 215;
+const COLS = 8;
+const X0 = 32;
+const PITCH_X = 192;
 const Y0 = 170;
-const PITCH_Y = 220;
+const PITCH_Y = 180;
 
 export const GlyphProbe: React.FC<GlyphProbeProps> = ({ debug = false }) => {
   return (
-    <Canvas w={1600} h={1080} debug={debug} theme="light">
+    <Canvas w={1600} h={1920} debug={debug} theme="light">
       <At x={60} y={50}>
         <div style={{ width: 1480 }}>
-          <Title accentColor="blue" rightSlot="diagram-kit · glyphs">
-            Glyph Registry — lineal-color topic icons
+          <Title accentColor="blue" rightSlot="diagram-kit / glyphs">
+            Glyph Registry - 57 lineal-color topic icons
           </Title>
         </div>
       </At>
@@ -57,12 +57,15 @@ export const GlyphProbe: React.FC<GlyphProbeProps> = ({ debug = false }) => {
         const col = i % COLS;
         return (
           <At key={name} x={X0 + col * PITCH_X} y={Y0 + row * PITCH_Y}>
-            <div style={{ width: 96, display: "flex", justifyContent: "center" }}>
+            <div
+              style={{ width: 160, display: "flex", justifyContent: "center" }}
+            >
               <Glyph
                 name={name}
                 color={ROW_COLORS[row % ROW_COLORS.length]}
                 size={80}
                 label={name}
+                style={{ width: 160, textAlign: "center" }}
                 debugId={`g-${name}`}
               />
             </div>
@@ -70,21 +73,27 @@ export const GlyphProbe: React.FC<GlyphProbeProps> = ({ debug = false }) => {
         );
       })}
 
-      <At x={100} y={848}>
+      <At x={100} y={1595}>
         <Label debugId="tint-label" size={15}>
-          One glyph, eight tints — fills follow the palette, ink stays fixed
+          One glyph, eight tints - fills follow the palette, ink stays fixed
         </Label>
       </At>
       {TINT_COLORS.map((c, i) => (
-        <At key={c} x={100 + i * 180} y={892}>
-          <Glyph name="llm" color={c} size={64} label={c} debugId={`tint-${c}`} />
+        <At key={c} x={100 + i * 180} y={1640}>
+          <Glyph
+            name="llm"
+            color={c}
+            size={64}
+            label={c}
+            debugId={`tint-${c}`}
+          />
         </At>
       ))}
 
-      <At x={100} y={1024}>
+      <At x={100} y={1835}>
         <Annotation tone="gray" debugId="note">
-          House style: 80x80 viewBox, near-black ink outlines, accent + light fills from the active swatch.
-          Nouns get glyphs; verbs stay arrows.
+          House style: 80x80 viewBox, near-black ink outlines, accent + light
+          fills from the active swatch. Nouns get glyphs; verbs stay arrows.
         </Annotation>
       </At>
     </Canvas>
