@@ -53,35 +53,7 @@ Diagram Kit treats a visual as a program:
 - Fail the check when elements overlap or an arrow crosses content.
 - Render the verified composition as a high-density PNG or Remotion MP4.
 
-## Architecture
-
-Diagram Kit is an agent-first visual pipeline. The repository skill teaches an
-agent the real component API and layout rules. The agent writes a React
-composition, Remotion performs a headless debug render, and `check.mjs` turns
-layout telemetry into a hard collision gate before final output.
-
-```text
-Intent or prompt
-      |
-      v
-Diagram Kit skill -> React composition -> Remotion debug render
-                                               |
-                                               v
-                                  BBOX + ARROW + ORPHAN
-                                               |
-                                               v
-                                      collision checker
-                                        /           \
-                                       v             v
-                                     PNG            MP4
-```
-
-The composition remains the single source of truth. Themes, primitives,
-animation timing, and output formats all build on that source.
-
-## Preview
-
-### Architecture and verification flow
+## Architecture and verification flow
 
 This diagram explains Diagram Kit using Diagram Kit itself. The public source
 is [`DiagramKitArchitecture.tsx`](apps/playground/src/examples/DiagramKitArchitecture.tsx).
