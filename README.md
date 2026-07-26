@@ -258,13 +258,15 @@ include `browser`, `container`, `database`, `queue`, `api-gateway`,
 `load-balancer`, `git-branch`, `pipeline`, `logs`, `metrics`, `traces`, and
 the rest of the rendered registry above.
 
-Read [`SKILL.md`](SKILL.md) for the complete component API, props, layout rules,
-scripts, and reference compositions.
+Read [`SKILL.md`](SKILL.md) for the professional modeling workflow, diagram
+selection matrix, semantic checks, component API, layout rules, and scripts.
 
 ## Agent integration
 
-The repository skill is agent-neutral. It teaches the component API, the
-render-check-fix loop, and the marketing-video workflow.
+The repository skill is agent-neutral. It teaches an agent to select the view
+from the stakeholder question, build a typed semantic model, run notation and
+abstraction checks, compose with the component API, and complete the
+render-check-fix loop. It also includes the marketing-video workflow.
 
 ### Codex
 
@@ -295,6 +297,8 @@ Example requests:
 
 ```text
 Use Diagram Kit to diagram the architecture of this repository.
+Use Diagram Kit to create C4 context and container views for this service.
+Use Diagram Kit to model this API call as a sequence diagram with failure paths.
 Use Diagram Kit to animate this request flow.
 Use Diagram Kit to create a narrated 60-second product demo.
 ```

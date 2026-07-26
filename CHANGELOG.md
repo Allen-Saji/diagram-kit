@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a model-first professional diagram workflow to `SKILL.md` with a typed
+  `DiagramSpec`, question-driven view selection, notation-specific semantic
+  checks, topology-derived layout rules, and separate modeling, geometry,
+  visual, and delivery gates.
 - Expanded `Glyph` from 21 to 57 names with vendor-neutral software
   engineering concepts for clients, compute, data, messaging, networking,
   delivery workflows, observability, configuration, and identity.

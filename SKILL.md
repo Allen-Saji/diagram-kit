@@ -1,8 +1,6 @@
 ---
 name: diagram-kit
-description: Generate ByteByteGo-style technical diagrams, animated explainers, and narrated marketing/demo videos using the React + Remotion toolkit at ~/projects/diagram-kit. Use when asked to "diagram", "visualize architecture", "animate this flow", "make a technical diagram", "BBG-style diagram", "create a product video", or "make a narrated demo". Not for whiteboard-style sketches (use excalidraw-diagram instead).
-metadata:
-  tags: diagram, remotion, visualization, architecture, bytebytego, png, mp4
+description: Model and render professional software-engineering diagrams, animated explainers, and narrated marketing/demo videos with the React and Remotion toolkit at ~/projects/diagram-kit. Select the correct viewpoint and diagram type, build a typed semantic model, then produce checked PNG or MP4 output. Use for system context, container, component, deployment, sequence, data-flow, threat-model, ERD, state, workflow, network, identity, resilience, architecture, technical explainer, ByteByteGo-style, and product-video requests. Not for editable whiteboards (use excalidraw-diagram instead).
 ---
 
 # diagram-kit
@@ -23,7 +21,186 @@ Allen's personal toolkit for generating ByteByteGo-style technical diagrams. One
 
 **Do not invoke for:** interactive/editable whiteboard files, mind maps, flowcharts with loose layout - use `excalidraw-diagram` for those. (A hand-drawn _look_ in a rendered PNG is covered here by `theme="sketch"`.)
 
-## Workflow
+## Professional diagram workflow
+
+A professional diagram is a view over a model. It answers one engineering
+question for one audience. Do not begin layout, styling, or animation until the
+semantic model is coherent.
+
+### 1. Write the diagram contract
+
+Record this internal `DiagramSpec` before composing:
+
+```yaml
+question: What must the reader understand or decide?
+audience: Who will use this view?
+diagram_type: C4 container, sequence, deployment, DFD, ERD, state, etc.
+notation: C4, UML, BPMN, IDEF1X, informal-but-declared, etc.
+scope: System of interest and explicit inside/outside boundary
+abstraction: conceptual, logical, implementation, runtime, or deployment
+time_reference: AS-IS, TO-BE, or scenario-specific
+evidence: Files, code, infrastructure, APIs, and primary sources inspected
+assumptions: Facts not yet verified
+omissions: Details intentionally excluded
+nodes:
+  - id: stable-id
+    type: person, system, container, component, process, store, entity, etc.
+    name: Exact source-backed name
+    responsibility: One short purpose
+    technology: Include only when the selected view requires it
+    boundary: Owning system, trust zone, network, runtime, or team
+edges:
+  - from: stable-id
+    to: stable-id
+    type: call, event, data-flow, dependency, transition, association, etc.
+    label: Precise direction-compatible phrase
+    protocol: Include when relevant at this abstraction
+boundaries:
+  - id: stable-boundary-id
+    type: system, ownership, trust, network, deployment, or region
+    contains: [stable-id]
+legend: Meanings of non-obvious shapes, colors, borders, and line styles
+```
+
+Never invent a component, interaction, protocol, datastore, boundary, metric,
+failure path, or deployment fact to make the canvas look complete. Mark an
+assumption or ask for missing evidence when it would materially change the
+model.
+
+### 2. Select the view from the reader's question
+
+Use the smallest purposeful set of views. If the question or audience changes,
+create another coordinated diagram instead of overloading one canvas.
+
+| Reader question                                          | Primary view                     | Required content                                                                                                                | Exclude                                                |
+| -------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Who uses the system, and what is outside it?             | C4 system context                | System as one black box, people, external systems, labeled relationships, explicit scope boundary                               | Internal services, classes, deployment nodes           |
+| What runnable units and stores make up one system?       | C4 container                     | Applications and datastores, responsibilities, technologies, labeled communication                                              | Classes, replicas, detailed request chronology         |
+| How is one container internally structured?              | C4 or UML component              | One container boundary, components, interfaces, responsibilities, dependencies                                                  | Cloud topology and unrelated systems                   |
+| What happens during one runtime scenario?                | UML-style sequence or C4 dynamic | Participants, top-to-bottom order, calls, events, returns when useful, alternatives, retries, failures                          | Static ownership hierarchy                             |
+| Where does software run?                                 | Deployment                       | Environments, regions, nodes, execution runtimes, deployed artifacts or instances, network paths                                | Business workflow                                      |
+| How is the network segmented and connected?              | Network topology                 | Internet ingress/egress, accounts, regions, VPC/VNet, subnets, gateways, east-west or north-south paths                         | Application internals unrelated to connectivity        |
+| How does data enter, transform, rest, and leave?         | DFD or data lineage              | External entities, processes, stores, named data flows, classifications, trust-boundary crossings                               | Control-flow order and decision diamonds               |
+| What data facts and constraints persist?                 | ERD                              | Entities, keys, relevant attributes, relationships, cardinality, optionality                                                    | Servers, cloud regions, request order                  |
+| What states can one subject occupy?                      | State machine                    | Initial state, stable conditions, event/guard/action transitions, terminal states                                               | Components joined by generic flow arrows               |
+| What decisions and parallel steps form a workflow?       | Activity or flowchart            | Verb-led actions, decisions, labeled branches, forks/joins, explicit outcomes                                                   | Deployment topology                                    |
+| Which independent business participants exchange work?   | BPMN collaboration               | Pools as participants, lanes as partitions, events, activities, gateways, sequence flow inside pools, message flow across pools | Data models and infrastructure                         |
+| What goals does an external role expect from the system? | Use-case                         | Actors as roles, system boundary, externally valuable behaviors                                                                 | Screen order and implementation steps                  |
+| What static code types or modules relate?                | UML class, package, or module    | Typed static relationships, attributes/operations only when useful, multiplicity where relevant                                 | Runtime calls presented as static dependencies         |
+| What does a user do across interfaces and services?      | User journey or user flow        | Persona, steps, touchpoints, decisions, pain points, service handoffs                                                           | Low-level infrastructure unless it affects the journey |
+| How do failure and recovery work?                        | Resilience view                  | Failure domains, redundancy, failover paths, degraded modes, RPO/RTO where verified                                             | Unrelated happy-path detail                            |
+| Where are identity and authorization decisions made?     | Identity/access flow             | Principal, token issuer, policy decision/enforcement points, credential/token movement, trust changes                           | Generic system arrows with no auth semantics           |
+
+Use C4 system context and container views as the default pair for general
+software architecture. Add component, dynamic, deployment, security, data, or
+resilience views only when they answer a distinct question.
+
+### 3. Build and lint the semantic model
+
+Apply these checks before choosing coordinates:
+
+- **Viewpoint purity.** Keep one primary concern and one abstraction level.
+  Reuse neighboring-level elements only as clearly marked context.
+- **Typed elements.** Give every node a type, stable ID, exact name, and short
+  responsibility. Do not let a generic `Card` erase what the element means.
+- **Directed relationships.** Use one arrow per direction. Label non-obvious
+  edges with a precise verb phrase, data noun, event, protocol, dependency, or
+  transition. Avoid vague labels such as `uses` and `talks to`.
+- **Real boundaries.** Group only by actual system, ownership, trust, network,
+  deployment, region, or process boundaries. Decorative grouping is not a
+  boundary.
+- **Evidence.** Trace every factual node, edge, boundary, metric, and claim to
+  inspected evidence or mark it as an assumption.
+- **Completeness for the stated question.** Include relevant entry, success,
+  failure, retry, timeout, async consumer, external dependency, and
+  system-of-record behavior. Do not add unrelated detail.
+- **Cross-view consistency.** Reuse IDs, names, responsibilities, and boundary
+  ownership across structural, runtime, deployment, data, and security views.
+- **Notation honesty.** Use `C4`, `UML`, `BPMN`, or `IDEF1X` in the title only
+  when their semantics are followed. Otherwise label the view as
+  `C4-style`, `UML-style`, `BPMN-style`, or `informal architecture`.
+
+Type-specific invariants:
+
+- **C4:** Do not mix system, container, component, and code levels. Context
+  treats the system as a black box. Containers are independently runnable or
+  deployable applications and datastores, not arbitrary modules. State
+  responsibility and technology where known.
+- **Sequence:** Time runs downward, but vertical distance does not imply
+  duration. Keep events ordered per participant. Distinguish synchronous calls,
+  async messages, and replies. Make `alt`, `opt`, `loop`, retry, timeout, and
+  failure behavior explicit when relevant.
+- **Deployment:** Nest artifacts or instances inside the nodes that execute
+  them. Keep type-level and instance-level views distinct. Label environment,
+  network/trust boundaries, direction, and protocol where known.
+- **DFD:** Distinguish external entity, process, store, and data flow. Name
+  arrows with data, not control verbs. Do not imply chronology, decisions, or
+  concurrency. Parent and child levels must preserve external inputs/outputs.
+- **ERD:** Use singular-noun data entities, not servers or workflows. Show keys,
+  relevant attributes, relationship cardinality, and optionality at both ends.
+  Resolve many-to-many relationships in logical or physical models.
+- **State machine:** Name states as stable conditions, not actions. Label
+  transitions as `event [guard] / effect`. Show initial and terminal behavior.
+  Do not substitute a workflow when lifecycle semantics are the question.
+- **Activity/process:** Name work as verb phrases and decisions as questions.
+  Label every outgoing branch. Pair forks with joins and give every path an
+  explicit outcome. Do not assume page position creates execution order.
+- **BPMN:** Sequence flow stays within one pool; message flow crosses between
+  pools. Pools are independent participants, lanes are partitions, and
+  gateways control routing rather than perform work.
+- **Static code views:** Distinguish dependency, association, implementation,
+  inheritance, aggregation, composition, and containment. Do not use a runtime
+  message arrow for a static relationship.
+
+### 4. Derive layout from semantics
+
+- Pick one dominant reading direction. Use left-to-right for pipelines and
+  request/data flow, top-to-bottom for hierarchy and decomposition, and
+  top-to-bottom lifelines for temporal interaction.
+- Keep the primary path monotonic. Put elements at the same logical stage on
+  the same rank.
+- Order nodes to reduce edge crossings and edge length before adding waypoints.
+  Increase spacing before shrinking text.
+- Use orthogonal elbows for block, network, and deployment topology. Use direct
+  lines for simple flows. Do not mix routing styles unless the styles carry
+  declared meaning.
+- Route around nodes, labels, and boundaries. Connect at the nearest sensible
+  edge, not through the center of unrelated content.
+- Use containment only for real ownership or execution. Use proximity for
+  association, alignment for equivalence or stage, and whitespace to separate
+  concerns.
+- Keep conceptual diagrams vendor-neutral. Use current official icons and exact
+  service names only in provider-specific implementation or deployment views.
+  Never stretch, recolor, rotate, or substitute vendor marks for generic
+  concepts.
+- Use color as redundant reinforcement, never as the only semantic channel.
+  Add a compact legend whenever color, shape, border, arrowhead, or line style
+  carries meaning.
+- Split the view when the main question, audience, abstraction, relationship
+  semantics, or reading direction stops being singular.
+
+### 5. Run professional review gates
+
+A render is deliverable only when all gates pass:
+
+1. **Intent gate:** The title states diagram type and scope. The audience,
+   question, time reference, evidence, assumptions, and omissions are known.
+2. **Modeling gate:** The selected view answers the question. Typed nodes,
+   relationships, and boundaries pass the general and type-specific checks.
+3. **Abstraction gate:** Mixed levels or multiple primary concerns have been
+   split into coordinated views.
+4. **Notation gate:** Shapes and edges follow the declared notation. The legend
+   explains every non-obvious visual encoding.
+5. **Geometry gate:** Every placed primitive and meaningful arrow has a unique
+   `debugId`; `node scripts/check.mjs <Name>` passes. This proves geometry only.
+6. **Visual gate:** Inspect the final render at native size and intended
+   publishing size. Confirm reading order, labels, arrow direction, boundary
+   containment, contrast, and legibility.
+7. **Delivery gate:** Record the diagram type, evidence basis, freshness,
+   assumptions, and output path. Retire or update views that no longer answer
+   their stated question accurately.
+
+## Build and render workflow
 
 The repo is a pnpm monorepo:
 
@@ -35,7 +212,7 @@ The repo is a pnpm monorepo:
   scripts/                <- iterate, check, render-png, render-mp4, render-via-api
 ```
 
-1. **Gather context** on the subject. If it's a known project, read `~/Brain/Projects/<name>/` (design docs, architecture notes) and consult memory. Pick the format: diagram (sequence / architecture block / tree / flow) or page (listicle poster / product one-pager / comparison columns / band-stack slide — see the page templates below). Pick a theme: `"light"` (default, BBG-canonical pale-mint bg) for blog/Twitter heroes; `"dark"` for protocol/CLI/security topics where neon-on-dark reads better; `"sketch"` for hand-drawn explainers (graph paper, hand font, wobbly borders); `"legacy"` only when reproducing or extending a previously-published diagram whose look must match.
+1. **Gather evidence and complete the `DiagramSpec`.** If it's a known project, read `~/Brain/Projects/<name>/` (design docs, architecture notes) and inspect the implementation or deployment sources that support the view. Select the theme only after the semantic model is stable: `"light"` (default, BBG-canonical pale-mint bg) for blog/Twitter heroes; `"dark"` for protocol/CLI/security topics where neon-on-dark reads better; `"sketch"` for hand-drawn explainers (graph paper, hand font, wobbly borders); `"legacy"` only when reproducing or extending a previously-published diagram whose look must match.
 2. **Draft composition.** Two locations:
    - `apps/playground/src/examples/<Name>.tsx` — public, ships in the repo. Use this for fidelity probes, BBG reference clones, and any diagram intended for the OSS playground.
    - `private/projects/<Name>.tsx` — Allen-personal, gitignored. Use this for project-specific diagrams (px402, Port Protocol, ReceiptAI, Docket, AgentBazaar, etc.) where branding, audio, and Allen-owned imagery live.
@@ -56,7 +233,9 @@ The repo is a pnpm monorepo:
    - PNG: `bash scripts/render-png.sh <Name> hd` (2x retina; auto-routes to `out/<theme>/`)
    - MP4: `bash scripts/render-mp4.sh <Name> tweet-16x9`
 
-Never skip step 5 on a new composition. Collisions are invisible until the checker flags them.
+Never skip the semantic review or step 5 on a new composition. `check.mjs`
+detects geometry defects; it cannot prove that the diagram type, abstraction,
+edge meaning, boundaries, chronology, cardinality, or architecture are correct.
 
 ## Marketing-video workflow
 
@@ -980,9 +1159,13 @@ MP4 presets:
 - **No CSS transitions.** All motion via `useCurrentFrame()` — enforced by Remotion's rendering model, not an aesthetic choice.
 - **Mono font for technical strings.** Addresses, tx hashes, CLI output, endpoints.
 
-## Reference compositions
+## Component fidelity probes and project compositions
 
-Study these for patterns before writing a new diagram. Public examples live under `apps/playground/src/examples/`; Allen-personal project comps live under `private/projects/`.
+Use these to learn component APIs, layout mechanics, and rendering patterns.
+They are visual probes, not semantic modeling authorities. Build and review the
+`DiagramSpec` independently before copying any arrangement or claim. Public
+examples live under `apps/playground/src/examples/`; Allen-personal project
+compositions live under `private/projects/`.
 
 Public (`apps/playground/src/examples/fidelity/`):
 
