@@ -106,6 +106,15 @@ Apply these checks before choosing coordinates:
 - **Directed relationships.** Use one arrow per direction. Label non-obvious
   edges with a precise verb phrase, data noun, event, protocol, dependency, or
   transition. Avoid vague labels such as `uses` and `talks to`.
+- **Audience vocabulary.** For a public or README diagram, write for a reader
+  who has not opened the repository. Translate internal component names,
+  abbreviations, workflow states, and implementation terms into the user-visible
+  role or outcome. If a necessary technical term is unfamiliar, explain it in
+  plain language at first use.
+- **Public status hygiene.** Keep internal phase names, milestone numbers,
+  commit abbreviations, issue IDs, and freshness markers such as `AS-IS` or
+  `Phase 7` in the diagram metadata or surrounding documentation. Put them on
+  the canvas only when the audience needs them to interpret the view.
 - **Real boundaries.** Group only by actual system, ownership, trust, network,
   deployment, region, or process boundaries. Decorative grouping is not a
   boundary.
@@ -166,6 +175,16 @@ Type-specific invariants:
   declared meaning.
 - Route around nodes, labels, and boundaries. Connect at the nearest sensible
   edge, not through the center of unrelated content.
+- Give relationship captions their own whitespace lane beside the connector.
+  Never place a caption capsule over a connector stroke. Use a short, verb-led
+  first line that agrees with the arrow direction, plus an optional smaller and
+  quieter second line for a protocol, channel, or constraint.
+- Separate opposite-direction relationships into distinct lanes. If a caption
+  does not fit the available gap, enlarge the gap, reroute the edge, or simplify
+  the wording. Do not shrink it below the publishing-size readability target.
+- For professional connector captions, prefer tracked standalone `Label`
+  primitives next to an unlabeled `Arrow`. Give every caption line a unique
+  `debugId` so it participates in geometry checks.
 - Use containment only for real ownership or execution. Use proximity for
   association, alignment for equivalence or stage, and whitespace to separate
   concerns.
@@ -195,7 +214,9 @@ A render is deliverable only when all gates pass:
    `debugId`; `node scripts/check.mjs <Name>` passes. This proves geometry only.
 6. **Visual gate:** Inspect the final render at native size and intended
    publishing size. Confirm reading order, labels, arrow direction, boundary
-   containment, contrast, and legibility.
+   containment, contrast, and legibility. For public diagrams, ask whether every
+   title, node, relationship, legend item, and note makes sense without repository
+   context. Rewrite any label that fails that test.
 7. **Delivery gate:** Record the diagram type, evidence basis, freshness,
    assumptions, and output path. Retire or update views that no longer answer
    their stated question accurately.
@@ -1205,7 +1226,7 @@ Private (`private/projects/` — Allen-only):
 - **Canvas dimensions must match the render preset.** Setting `<Canvas w=1600 h=1000>` and rendering via `render-mp4.sh <comp> tweet-16x9` (which targets 1920x1080) causes Remotion to letterbox or pad the mismatch, producing empty space in the final video. Match canvas dims to the intended preset from the start: `tweet-16x9` → 1920x1080, `tweet-sq` → 1080x1080, `tweet-9x16` → 1080x1920, `blog` PNG → any 16:10-ish ratio is fine. For static PNGs, any dims work since the composition is rendered at its native size. For MP4s, always pick canvas dims that match a preset.
 - **Animated compositions render at final frame for checks.** `check.mjs` automatically uses `composition.durationInFrames - 1` when durationInFrames > 1. This avoids spurious collisions from in-flight `Appear` / `ScaleIn` translates during the first few frames. For still compositions, it renders frame 0.
 - **Long text overflowing `FlowBox`.** `FlowBox` is fixed `width` × `height`. Use `Card` (inline-flex, sizes to content) when content is variable-length.
-- **`check.mjs` does NOT catch text-on-text overlap inside arrow labels.** Arrow labels (and any element marked `data-dk-skip`) are excluded from collision detection because labels legitimately float on arrow paths. If your arrow label is a multi-element group (label pill + sublabel below it, or label + inline badge), the checker won't notice when the elements overlap each other or sit on top of nearby cards. Always **visually verify** zoomed renders of any custom multi-line label group. Common breakage: making the main label pill taller (border, larger padding, pill radius) without re-spacing the sublabel that sits at `labelAt.y + 22` — the new pill engulfs the sublabel. Fix: top-anchor the sublabel (`transform: "translate(-50%, 0)"`) and bump the y offset to clear the pill's actual rendered height. Also confirm the whole label group sits in empty space — `labelAt.y` close to a card's top will push a top-anchored sublabel into the card.
+- **`check.mjs` does NOT fully validate built-in arrow labels.** Arrow labels and elements marked `data-dk-skip` are excluded from collision detection. For professional output, place relationship captions in reserved whitespace as standalone tracked `Label` primitives and keep the `Arrow` unlabeled. Visually inspect the native render and the actual publication width because geometry checks cannot prove that a caption is readable, clears the stroke, or makes sense to the target audience.
 - **Unicode in labels.** Avoid em dashes and fancy quotes in titles — stick to ASCII for portability across font stacks.
 
 ## Maintenance
